@@ -1,0 +1,55 @@
+/* Add customer form (add-customer.html) */
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.gender-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gender-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.gender-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.gender-option span {
+  display: block;
+  padding: 13px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.gender-option input:checked + span {
+  border-color: var(--green);
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.gender-option input:focus-visible + span {
+  outline: 2px solid var(--green-light);
+  outline-offset: 2px;
+}
+
+.gender-option:active span {
+  transform: scale(0.98);
+}

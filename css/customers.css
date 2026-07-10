@@ -1,0 +1,18 @@
+/* Customers list (customers.html) */
+
+.search {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.search input {
+  padding-left: 42px;
+}
+
+.search .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+}

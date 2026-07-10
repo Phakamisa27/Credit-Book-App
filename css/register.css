@@ -1,0 +1,35 @@
+/* Register page (register.html) */
+
+body[data-page='register'] {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  background: #fff;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.login-hero--compact {
+  padding: 44px var(--gutter) 72px;
+}
+
+.login-main--compact {
+  padding-top: 28px;
+}
+
+.login-main--compact .login-heading {
+  margin-bottom: 22px;
+}
+
+.register-error {
+  margin: 0 0 16px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--danger);
+}
+
+@media (min-width: 768px) {
+  .login-hero--compact {
+    padding-top: 52px;
+    padding-bottom: 80px;
+  }
+}

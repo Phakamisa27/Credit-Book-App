@@ -1,0 +1,148 @@
+/* Reminders (reminders.html) */
+
+.content.narrow {
+  max-width: 640px;
+}
+
+.segment {
+  display: flex;
+  background: var(--green-soft);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  gap: 4px;
+}
+
+.segment button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  border-radius: 9px;
+  font-weight: 600;
+  color: var(--green-dark);
+  cursor: pointer;
+}
+
+.segment button.active {
+  background: var(--green);
+  color: #fff;
+}
+
+.radio-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.radio-card.selected {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+
+.radio-card .rc-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.radio-card .rc-main {
+  flex: 1;
+}
+
+.radio-card .rc-title {
+  font-weight: 600;
+}
+
+.radio-card .rc-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.radio-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: grid;
+  place-items: center;
+}
+
+.radio-card.selected .radio-dot {
+  border-color: var(--green);
+}
+
+.radio-card.selected .radio-dot::after {
+  content: '';
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.preview-box {
+  background: #fdf6ec;
+  border: 1px solid #f3e4cc;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-top: 4px;
+}
+
+.preview-box .pv-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.preview-box p {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+}
+
+.preview-box p:last-child {
+  margin-bottom: 0;
+}
+
+.sync-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  box-shadow: var(--shadow);
+  margin-top: 14px;
+}
+
+.sync-card .sync-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green);
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+.sync-card .sync-main {
+  flex: 1;
+}
+
+.sync-card .sync-title {
+  font-weight: 600;
+}
+
+.sync-card .sync-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}

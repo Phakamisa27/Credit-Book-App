@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#185f3c" />
+    <title>Login · Credit Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/login.css" />
+  </head>
+  <body data-page="login">
+    <div class="login-page">
+      <header class="login-hero">
+        <div class="login-hero-inner">
+          <h1 class="login-hero-title">Hello, Welcome</h1>
+          <p class="login-hero-sub">Don't have an Account</p>
+          <a class="login-register-btn" href="register.html">Register</a>
+        </div>
+      </header>
+
+      <main class="login-main">
+        <h2 class="login-heading">Login</h2>
+
+        <form id="loginForm" class="login-form" autocomplete="on">
+          <div class="login-field">
+            <input
+              class="login-input"
+              id="username"
+              name="username"
+              type="text"
+              placeholder="Username"
+              required
+            />
+            <span class="login-field-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M4.5 20.25a7.5 7.5 0 0 1 15 0"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+          </div>
+
+          <div class="login-field">
+            <input
+              class="login-input"
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Password"
+              required
+            />
+            <span class="login-field-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <rect
+                  x="5"
+                  y="11"
+                  width="14"
+                  height="10"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M8 11V8a4 4 0 0 1 8 0v3"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+          </div>
+
+          <a class="login-forgot" href="#">Forgot Password</a>
+
+          <button class="login-submit-btn" type="submit">Login</button>
+        </form>
+      </main>
+    </div>
+
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        window.location.href = 'dashboard.html';
+      });
+    </script>
+  </body>
+</html>

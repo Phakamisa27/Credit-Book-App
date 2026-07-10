@@ -1,0 +1,66 @@
+/* Splash screen (index.html) */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(
+    165deg,
+    var(--green-light) 0%,
+    var(--green) 55%,
+    var(--green-dark) 100%
+  );
+}
+
+.splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--gutter);
+  text-decoration: none;
+}
+
+.splash-title {
+  margin: 0;
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2.8rem, 14vw, 5.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  text-align: center;
+  color: #fff;
+  -webkit-text-stroke: 3px #000;
+  paint-order: stroke fill;
+  transform: rotate(-4deg);
+  /* Thick black 3D extrusion + soft depth shadow */
+  text-shadow:
+    1px 1px 0 #000,
+    2px 2px 0 #000,
+    3px 3px 0 #000,
+    4px 4px 0 #000,
+    5px 5px 0 #000,
+    6px 6px 0 #111,
+    7px 7px 0 #222,
+    8px 8px 0 #333,
+    9px 9px 0 #444,
+    10px 10px 18px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 768px) {
+  .splash-title {
+    -webkit-text-stroke: 4px #000;
+    text-shadow:
+      1px 1px 0 #000,
+      2px 2px 0 #000,
+      3px 3px 0 #000,
+      4px 4px 0 #000,
+      5px 5px 0 #000,
+      6px 6px 0 #000,
+      7px 7px 0 #111,
+      8px 8px 0 #222,
+      9px 9px 0 #333,
+      10px 10px 0 #444,
+      11px 11px 0 #555,
+      12px 12px 22px rgba(0, 0, 0, 0.5);
+  }
+}
