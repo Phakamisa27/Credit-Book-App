@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f7a4d" />
+    <title>Record Credit · Credit Book</title>
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/shell.css" />
+    <link rel="stylesheet" href="css/record-credit.css" />
+  </head>
+  <body data-page="record-credit" data-protected>
+    <div class="app-shell" id="appShell">
+      <div class="app-main">
+        <header class="app-header">
+          <div class="header-row">
+            <a class="icon-btn" href="dashboard.html" title="Back">←</a>
+            <h1>Record Credit</h1>
+          </div>
+          <p class="subtitle">Add everything the customer took, in one transaction.</p>
+        </header>
+
+        <main class="content">
+          <form id="recordCreditForm" autocomplete="off" novalidate>
+            <p id="formError" class="form-error" hidden></p>
+
+            <div class="form-group">
+              <label for="customerSelect">Customer *</label>
+              <select class="form-control" id="customerSelect" name="customerId" required></select>
+            </div>
+
+            <div class="form-group">
+              <div class="row-between">
+                <label>Quick Items <span class="muted">(tap to add a row)</span></label>
+                <button type="button" class="link-btn" id="manageItemsBtn">Edit</button>
+              </div>
+              <div id="quickItems" class="quick-items"></div>
+            </div>
+
+            <!-- Item names autocomplete from the owner's quick items. -->
+            <datalist id="quickItemNames"></datalist>
+
+            <div class="form-group">
+              <label>Items *</label>
+
+              <div class="items-table" id="itemsTable">
+                <div class="items-head" aria-hidden="true">
+                  <span>Item</span>
+                  <span>Qty</span>
+                  <span>Unit Price</span>
+                  <span>Total</span>
+                  <span></span>
+                </div>
+                <div id="itemRows"></div>
+              </div>
+
+              <button type="button" class="btn btn-outline add-row-btn" id="addItemRowBtn">
+                ＋ Add Item
+              </button>
+
+              <div class="grand-total" id="grandTotalBox">
+                <span class="grand-total-label">Grand Total</span>
+                <span class="grand-total-value" id="grandTotal">R0.00</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dueDate">Due Date *</label>
+              <input class="form-control" id="dueDate" name="dueDate" type="date" required />
+              <p class="form-hint">When you expect to be paid. Used to flag overdue accounts.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Notes <span class="muted">(optional)</span></label>
+              <textarea class="form-control" id="notes" name="notes" rows="2"
+                placeholder="Anything worth remembering about this sale"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="productPhotoInput">Product Photo <span class="muted">(optional)</span></label>
+              <input type="file" id="productPhotoInput" accept="image/*" capture="environment" hidden />
+              <div class="product-photo-empty" id="productPhotoEmpty">
+                <button type="button" class="product-photo-trigger" id="productPhotoTrigger">
+                  📷 Take / Upload Photo
+                </button>
+              </div>
+              <div class="product-photo-preview" id="productPhotoPreview" hidden>
+                <img id="productPhotoPreviewImg" alt="Product photo preview" />
+                <div class="product-photo-actions">
+                  <button type="button" class="btn btn-outline product-photo-btn" id="changePhotoBtn">
+                    Change Photo
+                  </button>
+                  <button type="button" class="btn btn-outline product-photo-btn" id="removePhotoBtn">
+                    Remove Photo
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Customer Signature <span class="muted">(optional)</span></label>
+              <div class="signature-wrap" id="signatureWrap">
+                <canvas id="signatureCanvas" class="signature-canvas"
+                  aria-label="Customer signature pad"></canvas>
+                <span class="signature-placeholder" id="signaturePlaceholder">Customer signs here</span>
+              </div>
+              <div class="signature-actions">
+                <button type="button" class="btn btn-outline signature-btn" id="clearSignatureBtn">
+                  Clear
+                </button>
+                <button type="button" class="btn btn-primary signature-btn" id="saveSignatureBtn">
+                  Save Signature
+                </button>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-accent" type="submit">Record Credit</button>
+              <a class="btn btn-outline" href="dashboard.html">Cancel</a>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/transactions.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+/* Dashboard (dashboard.html) */
+
+.stat-sub {
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+/* Two quick actions side by side on every screen size. */
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .actions-grid {
+    max-width: 520px;
+  }
+}

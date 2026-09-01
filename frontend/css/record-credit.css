@@ -1,0 +1,309 @@
+/* Record credit (record-credit.html) */
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.quick-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ---------------------------------------------------- multi-item editor --- */
+/* Each item is a labelled card on phones and a single table-like row from
+   tablet width up. Data entry on a phone is the common case, so the stacked
+   form is the default and the row layout is the enhancement. */
+
+.items-table {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.items-head {
+  display: none;
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 12px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* The item name spans the full width of a stacked card. */
+.item-row > .item-field:first-child {
+  grid-column: 1 / -1;
+}
+
+.item-total {
+  display: block;
+  padding: 13px 0;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--green-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.item-remove-field {
+  display: flex;
+  align-items: flex-end;
+}
+
+.row-remove {
+  width: 44px;
+  height: 46px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--danger);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.row-remove:hover:not(:disabled) {
+  background: #fde8e6;
+  border-color: var(--danger);
+}
+
+.row-remove:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+@media (min-width: 700px) {
+  .items-head,
+  .item-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 90px 140px 120px 52px;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .items-head {
+    padding: 10px 14px;
+    background: #fafbfa;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+
+  /* Column headers replace the per-field labels. */
+  .item-row .item-field label {
+    display: none;
+  }
+
+  .item-row > .item-field:first-child {
+    grid-column: auto;
+  }
+
+  .item-total {
+    text-align: right;
+  }
+
+  .items-head span:nth-child(4) {
+    text-align: right;
+  }
+}
+
+.add-row-btn {
+  width: auto;
+  margin-top: 12px;
+  padding: 11px 18px;
+  border-style: dashed;
+  border-color: var(--green-light);
+  color: var(--green-dark);
+  font-size: 0.9rem;
+}
+
+.grand-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--green-soft);
+}
+
+.grand-total-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--green-dark);
+}
+
+.grand-total-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.qi-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pill.clear.qi-fill {
+  cursor: pointer;
+  border: none;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+}
+
+.qi-del {
+  display: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: var(--danger);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  place-items: center;
+}
+
+#quickItems.managing .qi-del {
+  display: inline-grid;
+}
+
+#quickItems.managing .qi-fill {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.pill.add-item {
+  border: 1.5px dashed var(--green-light);
+  background: transparent;
+  color: var(--green-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Customer signature pad */
+.signature-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border: 2px dashed var(--green-light);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  overflow: hidden;
+}
+
+.signature-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.signature-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.signature-wrap.has-stroke .signature-placeholder,
+.signature-wrap.is-saved .signature-placeholder {
+  opacity: 0;
+}
+
+.signature-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.signature-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+/* Product photo upload */
+.product-photo-empty {
+  width: 100%;
+}
+
+.product-photo-trigger {
+  width: 100%;
+  padding: 14px;
+  border: 2px dashed var(--green-light);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--green-dark);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.product-photo-trigger:active {
+  transform: scale(0.99);
+}
+
+.product-photo-preview img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: #fff;
+}
+
+.product-photo-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.product-photo-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.9rem;
+}

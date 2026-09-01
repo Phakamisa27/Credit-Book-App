@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f7a4d" />
+    <title>Customer Profile · Credit Book</title>
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/shell.css" />
+    <link rel="stylesheet" href="css/customer-profile.css" />
+  </head>
+  <body data-page="customer-profile" data-protected>
+    <div class="app-shell" id="appShell">
+      <div class="app-main">
+        <header class="app-header">
+          <div class="header-row">
+            <a class="icon-btn" href="customers.html" title="Back">←</a>
+            <h1>Customer Profile</h1>
+            <span class="spacer"></span>
+            <div class="header-actions">
+              <a class="icon-btn" id="editCustomerLink" href="#" title="Edit customer">✏️</a>
+              <button class="icon-btn" id="deleteCustomerBtn" title="Delete customer">🗑️</button>
+            </div>
+          </div>
+        </header>
+
+        <div id="profileRoot">
+          <div class="profile-card">
+            <div class="profile-head">
+              <div class="avatar" id="profileAvatar">👤</div>
+              <div>
+                <div class="profile-name" id="profileName">—</div>
+                <div class="profile-phone" id="profilePhone">—</div>
+                <div class="profile-phone" id="profileMeta" hidden></div>
+              </div>
+            </div>
+
+            <div class="credit-summary">
+              <div class="summary-row">
+                <span class="summary-label">Total Credit</span>
+                <span class="summary-value" id="summaryTotalCredit">R0.00</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Total Paid</span>
+                <span class="summary-value" id="summaryTotalPaid">R0.00</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Outstanding Balance</span>
+                <span class="summary-value" id="summaryBalance">R0.00</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Due Date</span>
+                <span class="summary-value" id="summaryDueDate">—</span>
+              </div>
+              <div class="summary-row summary-status">
+                <span class="summary-label">Status</span>
+                <span id="summaryStatus"></span>
+              </div>
+            </div>
+
+            <div class="balance-box" id="balanceBox">
+              <div class="label">Current Balance</div>
+              <div class="value">R0.00</div>
+            </div>
+
+            <div class="actions-grid mt-16">
+              <a class="action-btn bg-orange" id="addCreditLink" href="#">
+                <span class="action-icon">🛍️</span>Add Credit
+              </a>
+              <button class="action-btn bg-green" id="recordPaymentBtn" type="button">
+                <span class="action-icon">💵</span>Record Payment
+              </button>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-outline" id="setReminderBtn" type="button">🔔 Set Reminder</button>
+            </div>
+          </div>
+
+          <main class="content">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Transaction History</h2>
+              </div>
+              <div class="table-wrap" id="historyWrap" hidden>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th class="num">Amount</th>
+                      <th class="num">Balance</th>
+                      <th class="num"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyBody"></tbody>
+                </table>
+              </div>
+              <div id="historyEmpty"></div>
+            </section>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- Record payment -->
+    <div class="modal" id="paymentModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+        <div class="modal-head">
+          <h3 id="paymentTitle">Record Payment</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="muted" id="paymentBalanceHint"></p>
+          <form id="paymentForm" novalidate>
+            <p id="paymentError" class="form-error" hidden></p>
+
+            <div class="form-group">
+              <label for="paymentAmount">Amount (R) *</label>
+              <input class="form-control" id="paymentAmount" name="amount" type="number"
+                step="0.01" min="0.01" required />
+              <p class="form-hint">Cannot be more than the outstanding balance.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="paymentDescription">Description</label>
+              <input class="form-control" id="paymentDescription" name="description" type="text"
+                placeholder="e.g. Cash payment" />
+            </div>
+
+            <div class="form-group">
+              <label for="paymentNotes">Notes <span class="muted">(optional)</span></label>
+              <textarea class="form-control" id="paymentNotes" name="notes" rows="2"></textarea>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" type="button" data-close>Cancel</button>
+              <button class="btn btn-primary" type="submit">Save Payment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Set reminder -->
+    <div class="modal" id="reminderModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reminderTitle">
+        <div class="modal-head">
+          <h3 id="reminderTitle">Set Reminder</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="muted">Reminder for <strong id="reminderCustomerName"></strong></p>
+          <form id="reminderForm" novalidate>
+            <p id="reminderError" class="form-error" hidden></p>
+
+            <div class="form-group">
+              <label for="reminderAmount">Amount (R) *</label>
+              <input class="form-control" id="reminderAmount" name="amount" type="number"
+                step="0.01" min="0.01" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reminderDueDate">Due Date *</label>
+              <input class="form-control" id="reminderDueDate" name="dueDate" type="date" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reminderNotes">Notes <span class="muted">(optional)</span></label>
+              <textarea class="form-control" id="reminderNotes" name="notes" rows="2"></textarea>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" type="button" data-close>Cancel</button>
+              <button class="btn btn-primary" type="submit">Save Reminder</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/customers.js"></script>
+  </body>
+</html>

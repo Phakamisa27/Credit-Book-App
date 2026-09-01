@@ -1,0 +1,490 @@
+/* shell.css — app layout: sidebar (desktop), tables, modals, auth pages.
+   Layers on top of base.css, which owns the colour tokens and components. */
+
+/* ------------------------------------------------------------- layout ---- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------------------------------------ sidebar ---- */
+/* Hidden on phones and tablets, where the bottom nav does the job. */
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    flex-shrink: 0;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 20px 14px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* The bottom nav is redundant once the sidebar is visible. */
+  .bottom-nav {
+    display: none;
+  }
+
+  /* No need to reserve space for a nav bar that isn't there. */
+  .content {
+    padding-bottom: 40px;
+  }
+}
+
+.side-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.side-brand-mark {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.side-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.side-brand-text strong {
+  font-size: 0.98rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.side-brand-text small {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.93rem;
+  font-weight: 600;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.side-link:hover {
+  background: var(--green-soft);
+}
+
+.side-link.active {
+  background: var(--green);
+  color: #fff;
+}
+
+.side-icon {
+  font-size: 1.1rem;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.side-logout {
+  margin-top: auto;
+  color: var(--danger);
+}
+
+.side-logout:hover {
+  background: #fde8e6;
+}
+
+/* ------------------------------------------------------------- header ---- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------- grids ---- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .panel-grid.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --------------------------------------------------------------- panel ---- */
+.panel {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.panel-head .panel-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+}
+
+.panel-body {
+  padding: 12px 16px 16px;
+}
+
+.panel-body .list-item:last-child {
+  margin-bottom: 0;
+}
+
+.panel-body .empty {
+  padding: 28px 12px;
+}
+
+.panel-body .empty p {
+  margin: 0;
+}
+
+/* -------------------------------------------------------------- tables ---- */
+/* Wide tables scroll inside their own box instead of the page. */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 560px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 11px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.data-table th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: #fafbfa;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: #fafbfa;
+}
+
+.data-table td.wrap {
+  white-space: normal;
+  min-width: 160px;
+}
+
+.data-table a {
+  color: var(--green-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.data-table a:hover {
+  text-decoration: underline;
+}
+
+.data-table .li-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Line-item breakdown shown under a multi-item credit's description. */
+.tx-items {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0 0 0 12px;
+  border-left: 2px solid var(--border);
+}
+
+.tx-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.79rem;
+  color: var(--muted);
+  padding: 2px 0;
+}
+
+.tx-item-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tx-item-qty {
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.tx-item-total {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* .action-btn is used on both <a> and <button>; buttons need the app's font. */
+button.action-btn {
+  font-family: inherit;
+}
+
+.data-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.amount-credit { color: var(--orange); }
+.amount-payment { color: var(--green); }
+
+/* -------------------------------------------------------------- modals ---- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 30, 22, 0.55);
+}
+
+.modal-card {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.modal-close {
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.modal-body {
+  padding: 18px;
+}
+
+.modal-body form {
+  max-width: none;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* --------------------------------------------------------------- forms ---- */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 14px;
+}
+
+@media (min-width: 640px) {
+  .form-row.two {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.form-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.form-error {
+  background: #fde8e6;
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.form-error[hidden] {
+  display: none;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-row .btn {
+  margin-top: 0;
+}
+
+.btn.btn-sm {
+  width: auto;
+  padding: 9px 14px;
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------- filters ---- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.toolbar .form-group {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 150px;
+}
+
+/* -------------------------------------------------------------- badges ---- */
+.status-owing {
+  background: #fdeee4;
+  color: var(--orange);
+}
+
+.status-due-soon {
+  background: #fff4e0;
+  color: #b3711a;
+}
+
+/* ---------------------------------------------------------------- misc ---- */
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.text-danger { color: var(--danger); }
+.text-green { color: var(--green); }
+.mb-0 { margin-bottom: 0; }
+.mt-8 { margin-top: 8px; }
+.mt-24 { margin-top: 24px; }
+
+.toast[data-variant='error'] {
+  background: var(--danger);
+}
+
+.toast[data-variant='success'] {
+  background: var(--green);
+}
+
+.empty p {
+  margin: 0 0 12px;
+}

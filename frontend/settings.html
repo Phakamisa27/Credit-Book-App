@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f7a4d" />
+    <title>Settings · Credit Book</title>
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/shell.css" />
+    <link rel="stylesheet" href="css/settings.css" />
+  </head>
+  <body data-page="settings" data-protected>
+    <div class="app-shell" id="appShell">
+      <div class="app-main">
+        <header class="app-header">
+          <div class="header-row">
+            <a class="icon-btn" href="dashboard.html" title="Back">←</a>
+            <h1>Settings</h1>
+          </div>
+        </header>
+
+        <main class="content">
+          <section class="panel">
+            <div class="panel-head"><h2>Business Profile</h2></div>
+            <div class="panel-body">
+              <div class="profile-photo-row">
+                <div class="profile-photo-frame">
+                  <span id="profilePhotoPlaceholder" aria-hidden="true">🏪</span>
+                  <img id="profilePhoto" alt="Business profile photo" hidden />
+                </div>
+                <div class="profile-photo-actions">
+                  <button class="btn btn-outline btn-sm" type="button" id="uploadPhotoBtn">
+                    Upload photo
+                  </button>
+                  <button class="btn btn-outline btn-sm" type="button" id="removeProfilePhoto" hidden>
+                    Remove
+                  </button>
+                  <input type="file" id="profilePhotoInput" accept="image/*" hidden />
+                </div>
+              </div>
+
+              <form id="profileForm" autocomplete="off" novalidate>
+                <p id="profileError" class="form-error" hidden></p>
+
+                <div class="form-row two">
+                  <div class="form-group">
+                    <label for="fullName">Your Name *</label>
+                    <input class="form-control" id="fullName" name="fullName" type="text" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="businessName">Business Name</label>
+                    <input class="form-control" id="businessName" name="businessName" type="text"
+                      placeholder="e.g. Phaka's Spaza Shop" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="businessPhone">Business Phone</label>
+                  <input class="form-control" id="businessPhone" name="businessPhone" type="tel"
+                    inputmode="numeric" maxlength="12" placeholder="e.g. 074 099 8882" />
+                  <p class="form-hint">Shown to you only — reminders are sent from your own phone.</p>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Save Profile</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="panel mt-24">
+            <div class="panel-head"><h2>Account</h2></div>
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <tbody>
+                    <tr><td>Email</td><td class="num" id="accountEmail">—</td></tr>
+                    <tr><td>Account created</td><td class="num" id="accountCreated">—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel mt-24">
+            <div class="panel-head"><h2>Change Password</h2></div>
+            <div class="panel-body">
+              <form id="passwordForm" autocomplete="off" novalidate>
+                <p id="passwordError" class="form-error" hidden></p>
+
+                <div class="form-group">
+                  <label for="currentPassword">Current Password *</label>
+                  <input class="form-control" id="currentPassword" name="currentPassword"
+                    type="password" autocomplete="current-password" required />
+                </div>
+
+                <div class="form-row two">
+                  <div class="form-group">
+                    <label for="newPassword">New Password *</label>
+                    <input class="form-control" id="newPassword" name="newPassword" type="password"
+                      autocomplete="new-password" minlength="8" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password *</label>
+                    <input class="form-control" id="confirmPassword" name="confirmPassword"
+                      type="password" autocomplete="new-password" minlength="8" required />
+                  </div>
+                </div>
+
+                <p class="form-hint">At least 8 characters.</p>
+                <button class="btn btn-primary" type="submit">Update Password</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="panel mt-24">
+            <div class="panel-head"><h2>Session</h2></div>
+            <div class="panel-body">
+              <button class="btn btn-danger" type="button" data-action="logout">Logout</button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/settings.js"></script>
+  </body>
+</html>

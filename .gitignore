@@ -1,0 +1,24 @@
+# Secrets
+.env
+.env.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node (kept while the Express backend is still in the tree)
+node_modules/
+npm-debug.log*
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db
+coverage/
+htmlcov/
+.coverage
