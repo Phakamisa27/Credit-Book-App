@@ -10,15 +10,48 @@ deleted afterwards, so running these will not touch real books.
 
 from __future__ import annotations
 
+import os
 import time
+from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse, urlunparse
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import text
+from dotenv import load_dotenv
 
-from app.db.session import SessionLocal
-from app.main import app
+# ---------------------------------------------------------------------------
+# Redirect to the test database BEFORE any app module is imported.
+#
+# The suite registers and deletes accounts, so it must never run against the
+# working book. app.core.config reads DATABASE_URL at import time, and
+# pydantic-settings gives a real environment variable priority over .env — so
+# setting it here, above the app imports below, is what takes effect.
+# ---------------------------------------------------------------------------
+_BACKEND_DIR = Path(__file__).resolve().parents[1]
+load_dotenv(_BACKEND_DIR / ".env")
+
+_url = os.environ.get("DATABASE_URL", "")
+if _url:
+    _parts = urlparse(_url)
+    _name = _parts.path.lstrip("/")
+    if not _name.endswith("_test"):
+        os.environ["DATABASE_URL"] = urlunparse(_parts._replace(path=f"/{_name}_test"))
+
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import text  # noqa: E402
+
+from app.core.config import settings  # noqa: E402
+from app.db.session import SessionLocal  # noqa: E402
+from app.main import app  # noqa: E402
+
+# Belt and braces: if the redirect above ever fails to apply, stop the run
+# rather than let DELETE FROM users loose on the real database.
+if not settings.database_url.rstrip("/").endswith("_test"):
+    raise RuntimeError(
+        "Refusing to run: the test suite is not pointed at a _test database.\n"
+        f"DATABASE_URL resolves to {urlparse(settings.database_url).path.lstrip('/')!r}.\n"
+        "Create it with:  DATABASE_URL=<...>_test python -m app.db.create_database"
+    )
 
 TEST_PASSWORD = "TestPassword123"
 TEST_EMAIL_DOMAIN = "creditbook.test"
