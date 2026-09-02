@@ -1,0 +1,87 @@
+# Render Blueprint — Credit Book September validation environment.
+#
+# This describes a THROWAWAY deployment for customer validation. It is not a
+# production setup and is not meant to become one.
+#
+#   Local development  backend/.env        -> localhost/credit_book
+#   Tests              tests/conftest.py   -> localhost/credit_book_test
+#   This deployment    injected by Render  -> credit-book-db
+#
+# Nothing here touches the local database. DATABASE_URL below is supplied by
+# Render at runtime from the managed database; backend/.env is never read on
+# Render and is not in the repository. No secret values appear in this file.
+#
+# ---------------------------------------------------------------------------
+# FREE PLAN LIMITS — both matter for validation
+#
+#   * The free database is DELETED 30 days after it is created, not paused.
+#     Take a pg_dump before then or every credit record entered is lost.
+#   * The free web service sleeps after 15 minutes idle and cold-starts in
+#     roughly 50 seconds. The first tap after a quiet spell is slow.
+# ---------------------------------------------------------------------------
+
+databases:
+  - name: credit-book-db
+    databaseName: credit_book
+    user: credit_book
+    plan: free
+    # Frankfurt is the closest free region to South Africa. It must match the
+    # service's region below, otherwise the internal connection string will not
+    # resolve and the app cannot reach the database.
+    region: frankfurt
+
+services:
+  - type: web
+    name: credit-book
+    runtime: python
+    plan: free
+    region: frankfurt
+
+    # Render checks out the whole repository; build and start run from backend/.
+    # app/core/config.py resolves FRONTEND_DIR as <repo>/frontend, so this one
+    # service serves the pages as well as the API and everything stays
+    # same-origin — no CORS involved, exactly as it behaves on the laptop.
+    rootDir: backend
+
+    buildCommand: pip install -r requirements.txt
+
+    # Migrate, then serve. `alembic upgrade head` is idempotent and the free
+    # plan runs a single instance, so there is no concurrent-migration risk.
+    # run.py reads PORT (injected by Render) and binds 0.0.0.0.
+    # Note: app.db.create_database is deliberately NOT run — Render provisions
+    # the database itself.
+    startCommand: alembic upgrade head && python run.py
+
+    healthCheckPath: /api/health
+
+    envVars:
+      # The managed database's internal connection string, injected by Render.
+      # Never stored in git.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: credit-book-db
+          property: connectionString
+
+      # Generated once by Render and then kept across deploys. Must be 32+
+      # characters because NODE_ENV is production — see app/core/config.py.
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Also switches uvicorn's auto-reload off in run.py.
+      - key: NODE_ENV
+        value: production
+
+      - key: JWT_EXPIRES_IN
+        value: 30d
+
+      # Same-origin anyway; the API is Bearer-token protected, not cookie based.
+      - key: CORS_ORIGIN
+        value: "*"
+
+      # Signatures and product photos are base64 data URIs.
+      - key: JSON_BODY_LIMIT
+        value: 8mb
+
+      # Match the local interpreter rather than taking Render's default.
+      - key: PYTHON_VERSION
+        value: "3.12.10"
