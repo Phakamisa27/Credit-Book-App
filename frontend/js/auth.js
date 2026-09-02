@@ -91,17 +91,9 @@
 
     const errorEl = document.getElementById('authError');
 
-    // Once the owner has an account there is no reason to advertise sign-up.
-    API.auth
-      .status()
-      .then(({ accountExists }) => {
-        document.querySelectorAll('[data-when="no-account"]').forEach((el) => {
-          el.hidden = accountExists;
-        });
-      })
-      .catch(() => {
-        // Server unreachable — leave the register link visible.
-      });
+    // Register stays visible. /auth/status reports whether *any* account
+    // exists, not the visitor's, so hiding on it locked out every owner after
+    // the first — and the books are per-owner, so each one needs their own.
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();

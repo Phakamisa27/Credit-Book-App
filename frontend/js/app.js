@@ -219,13 +219,15 @@ const App = (() => {
   // ----------------------------------------------------------------- shell --
   // Navigation is generated rather than pasted into 13 HTML files, so adding
   // a page means editing one array.
+  // `short` is what the bottom bar uses — six items on a 360px phone leaves
+  // about 58px each, which "Transactions" does not fit into.
   const NAV_ITEMS = [
-    { key: 'dashboard', label: 'Dashboard', icon: '🏠', href: 'dashboard.html' },
-    { key: 'customers', label: 'Customers', icon: '👥', href: 'customers.html' },
-    { key: 'transactions', label: 'Transactions', icon: '📋', href: 'transactions.html' },
-    { key: 'reminders', label: 'Reminders', icon: '🔔', href: 'reminders.html' },
-    { key: 'reports', label: 'Reports', icon: '📊', href: 'reports.html' },
-    { key: 'settings', label: 'Settings', icon: '⚙️', href: 'settings.html' },
+    { key: 'dashboard', label: 'Dashboard', short: 'Home', icon: '🏠', href: 'dashboard.html' },
+    { key: 'customers', label: 'Customers', short: 'Customers', icon: '👥', href: 'customers.html' },
+    { key: 'transactions', label: 'Transactions', short: 'History', icon: '📋', href: 'transactions.html' },
+    { key: 'reminders', label: 'Reminders', short: 'Reminders', icon: '🔔', href: 'reminders.html' },
+    { key: 'reports', label: 'Reports', short: 'Reports', icon: '📊', href: 'reports.html' },
+    { key: 'settings', label: 'Settings', short: 'Settings', icon: '⚙️', href: 'settings.html' },
   ];
 
   // Pages that are part of a section but are not the section's own nav entry.
@@ -267,17 +269,15 @@ const App = (() => {
     </aside>`;
   }
 
-  // Mobile keeps five items; Settings lives on the Reports/More overflow.
+  // Settings is on the bar too: below 1024px the sidebar is hidden, so this is
+  // the only route to the account screen — and to the Logout button on it.
   function renderBottomNav() {
     const active = activeNavKey();
-    const items = NAV_ITEMS.filter((i) => i.key !== 'settings');
-    const links = items
-      .map(
-        (item) => `<a class="nav-item ${item.key === active ? 'active' : ''}" href="${item.href}">
-          <span class="nav-icon">${item.icon}</span>${item.label}
+    const links = NAV_ITEMS.map(
+      (item) => `<a class="nav-item ${item.key === active ? 'active' : ''}" href="${item.href}">
+          <span class="nav-icon">${item.icon}</span>${item.short}
         </a>`
-      )
-      .join('');
+    ).join('');
     return `<nav class="bottom-nav">${links}</nav>`;
   }
 
@@ -287,7 +287,9 @@ const App = (() => {
       shell.insertAdjacentHTML('afterbegin', renderSidebar());
     }
 
-    if (!document.querySelector('.bottom-nav')) {
+    // Only the signed-in pages get the nav bar. On landing/login/register every
+    // tab would just bounce back to login, and the bar overlaps the form.
+    if (isProtectedPage() && !document.querySelector('.bottom-nav')) {
       document.body.insertAdjacentHTML('beforeend', renderBottomNav());
     }
 
@@ -302,10 +304,14 @@ const App = (() => {
     window.location.href = 'login.html';
   }
 
+  function isProtectedPage() {
+    return document.body.dataset.protected !== undefined;
+  }
+
   // Pages marked data-protected send the owner to login if there is no token.
   // The server enforces this too — this only avoids a flash of empty UI.
   function guard() {
-    if (document.body.dataset.protected === undefined) return true;
+    if (!isProtectedPage()) return true;
     if (!API.isLoggedIn()) {
       window.location.href = 'login.html';
       return false;
@@ -331,7 +337,7 @@ const App = (() => {
   document.addEventListener('DOMContentLoaded', () => {
     if (!guard()) return;
     initShell();
-    if (document.body.dataset.protected !== undefined) syncUser();
+    if (isProtectedPage()) syncUser();
   });
 
   return {
