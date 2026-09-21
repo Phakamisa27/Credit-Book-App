@@ -1,0 +1,852 @@
+/* thathacash.css — components for the ThathaCash screens (Home, Stock, Order,
+   Transactions, Draws, More). Colours come from the tokens in base.css.
+   Mobile-first: everything is designed for a 360px phone, then widened. */
+
+/* ------------------------------------------------------------- layout ---- */
+/* ThathaCash pages carry <body class="tc">. A phone-shaped app looks lost
+   stretched across a 1200px monitor, so keep it narrower. */
+.tc {
+  --page: 960px;
+}
+
+.tc .content {
+  padding-top: 4px;
+}
+
+.tc-top {
+  width: 100%;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.tc-top-inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 14px var(--gutter) 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 60px;
+}
+
+.tc-top h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.tc-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tc-logo {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.tc-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  font-family: inherit;
+}
+
+.tc-icon-btn:hover {
+  background: var(--green-soft);
+}
+
+.tc-icon-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* A red dot on the bell when something is running low. */
+.tc-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 2px solid var(--bg);
+}
+
+.tc-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 9px 15px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.tc-add-btn:active {
+  transform: scale(0.97);
+}
+
+.tc-section {
+  margin-top: 22px;
+}
+
+.tc-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 2px 10px;
+}
+
+.tc-section-head h2 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.tc-section-head a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+}
+
+.tc-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 6px 14px;
+}
+
+.tc-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 8px 2px 0;
+}
+
+/* Two columns once there's room (Home on a tablet or laptop). */
+@media (min-width: 900px) {
+  .tc-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+    align-items: start;
+  }
+}
+
+/* --------------------------------------------------------------- home ---- */
+.tc-hello h2 {
+  margin: 4px 2px 2px;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.tc-hello p {
+  margin: 0 2px 16px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.cash-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #16945a 0%, var(--green-dark) 100%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(11, 93, 52, 0.25);
+}
+
+.cash-hero-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.cash-hero-label {
+  font-size: 0.9rem;
+  opacity: 0.92;
+}
+
+.cash-hero-amount {
+  font-size: clamp(1.9rem, 9vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cash-hero.negative .cash-hero-amount {
+  color: #ffd6d6;
+}
+
+/* Home's one secondary number. The 30% rule is detail behind an expander,
+   not a second headline. */
+.cash-details {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  margin-top: 10px;
+}
+
+.cash-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.cash-details summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A chevron that turns when the detail opens. */
+.cash-details summary::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.cash-details[open] summary::after {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.cash-details summary strong {
+  margin-left: auto;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.cash-details-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.cash-details-body .row-between {
+  padding: 12px 0 4px;
+}
+
+.cash-details-body p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* Stock gets ONE line on Home. The Stock tab has the rest. */
+.low-stock-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  background: var(--amber-soft);
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  text-decoration: none;
+  color: var(--amber);
+  font-weight: 600;
+}
+
+.low-stock-line .tc-chevron {
+  margin-left: auto;
+  color: var(--amber);
+}
+
+
+/* First visit: ask for the cash already in the shop. */
+.setup-card {
+  background: var(--card);
+  border: 2px dashed #bfe0cc;
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.setup-card h3 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.setup-card p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.setup-card form {
+  display: flex;
+  gap: 8px;
+}
+
+.setup-card .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.setup-card .btn {
+  width: auto;
+}
+
+/* ------------------------------------------------------- list rows ---- */
+.tc-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+  width: 100%;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tc-row:last-child {
+  border-bottom: none;
+}
+
+.tc-row-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f1f4f2;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.tc-row-icon.in {
+  background: var(--green-soft);
+}
+
+.tc-row-icon.out {
+  background: var(--red-soft);
+}
+
+.tc-row-main {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+
+.tc-row-title,
+.tc-row-sub {
+  display: block;
+}
+
+.tc-row-title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tc-row-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.tc-row-amount {
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-row-amount.in {
+  color: var(--green);
+}
+
+.tc-row-amount.out {
+  color: var(--red);
+}
+
+.tc-chevron {
+  color: #b5beb9;
+  flex-shrink: 0;
+}
+
+.tc-chevron svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.tc-empty {
+  text-align: center;
+  padding: 26px 12px;
+  color: var(--muted);
+}
+
+.tc-empty .emoji {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.tc-empty p {
+  margin: 0 0 12px;
+}
+
+.tc-empty .btn {
+  width: auto;
+}
+
+/* ------------------------------------------------------------- pills ---- */
+.tc-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tc-pill.low {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.tc-pill.good {
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.tc-pill.soon {
+  background: #eef1ef;
+  color: var(--muted);
+}
+
+/* Five chips don't fit across a small phone, and a half-hidden "Draws" chip
+   is easy to miss. Wrap instead of scrolling sideways. */
+.tc .filter-bar {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+
+/* ------------------------------------------------------------ search ---- */
+.tc-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.tc-search .form-control {
+  padding-left: 42px;
+  border-radius: 999px;
+}
+
+.tc-search svg {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------- transactions ---- */
+.period-select {
+  margin-bottom: 12px;
+}
+
+.totals-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.total-card {
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.total-card.in {
+  background: var(--green-soft);
+}
+
+.total-card.out {
+  background: var(--red-soft);
+}
+
+.total-card-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.total-card-amount {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.total-card.in .total-card-amount {
+  color: var(--green-dark);
+}
+
+.total-card.out .total-card-amount {
+  color: var(--red);
+}
+
+.breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.breakdown div {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.breakdown small {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.breakdown strong {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------ log money form ---- */
+.type-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.type-picker button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 2px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.type-picker button span {
+  font-size: 1.2rem;
+}
+
+.type-picker button[aria-pressed='true'] {
+  border-color: var(--green);
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.amount-input {
+  font-size: 1.6rem;
+  font-weight: 800;
+  padding: 12px 14px;
+}
+
+.note-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.note-chips button {
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.note-chips button:hover {
+  border-color: var(--green-light);
+}
+
+/* ------------------------------------------------------------ stepper ---- */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepper button {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.stepper button:active {
+  background: var(--green-soft);
+}
+
+.stepper input {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  min-width: 0;
+}
+
+.stepper.sm {
+  gap: 6px;
+}
+
+.stepper.sm button {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+}
+
+.stepper.sm output {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.details-toggle {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.details-toggle summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--green);
+  font-size: 0.9rem;
+  list-style: none;
+}
+
+.details-toggle summary::-webkit-details-marker {
+  display: none;
+}
+
+.details-toggle[open] summary {
+  margin-bottom: 14px;
+}
+
+.form-row.three {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* --------------------------------------------------------------- order ---- */
+.order-hero {
+  background: var(--green-soft);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.order-hero h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.order-hero p {
+  margin: 2px 0 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.order-hero-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-alert {
+  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.budget-alert.ok {
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.budget-alert.warn {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.order-line-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.order-line-total {
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.remove-btn {
+  border: none;
+  background: none;
+  color: #a9b3ad;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-family: inherit;
+}
+
+.remove-btn:hover {
+  color: var(--red);
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.order-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* On phones the send button sits just above the bottom menu. */
+@media (max-width: 1023px) {
+  .order-actions.sticky {
+    position: sticky;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    padding: 10px 0;
+  }
+}
+
+/* ------------------------------------------------------------- more ---- */
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.faq h4 {
+  margin: 14px 0 4px;
+  font-size: 0.95rem;
+}
+
+.faq h4:first-child {
+  margin-top: 0;
+}
+
+.faq p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.logout-btn {
+  margin-top: 18px;
+  background: var(--card);
+  color: var(--red);
+  box-shadow: var(--shadow);
+}
+
+/* The sidebar already shows the logo on wide screens. */
+@media (min-width: 1024px) {
+  .tc-brand {
+    visibility: hidden;
+  }
+}

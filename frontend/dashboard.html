@@ -3,108 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#1f7a4d" />
-    <title>Dashboard · Credit Book</title>
+    <meta name="theme-color" content="#f6f8f7" />
+    <title>Home · ThathaCash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/shell.css" />
-    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/thathacash.css" />
   </head>
-  <body data-page="dashboard" data-protected>
+  <!-- Still called dashboard.html so login redirects and old links keep working.
+       Home shows ONE number. Stock, transactions and draws live in the menu. -->
+  <body class="tc" data-page="home" data-protected>
     <div class="app-shell" id="appShell">
       <div class="app-main">
-        <header class="app-header">
-          <div class="header-row">
-            <h1 data-bind="businessName">Credit Book</h1>
-            <span class="spacer"></span>
-            <div class="header-actions">
-              <a class="icon-btn" href="add-customer.html" title="Add customer">👤</a>
-              <a class="icon-btn" href="record-credit.html" title="Record credit">＋</a>
-            </div>
+        <header class="tc-top">
+          <div class="tc-top-inner">
+            <a class="tc-brand" href="dashboard.html" id="brand">ThathaCash</a>
           </div>
-          <p class="subtitle">Here's where your books stand today.</p>
         </header>
 
         <main class="content">
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="stat-icon bg-green">👥</div>
-              <div>
-                <div class="stat-label">Total Customers</div>
-                <div class="stat-value green" id="statCustomers">0</div>
-                <div class="stat-sub muted" id="subCustomers">—</div>
-              </div>
-            </div>
+          <section class="tc-hello">
+            <h2 id="greeting">Sawubona</h2>
+            <p id="helloSub">Loading your shop…</p>
+          </section>
 
-            <div class="stat-card">
-              <div class="stat-icon bg-orange">👛</div>
-              <div>
-                <div class="stat-label">Total Outstanding</div>
-                <div class="stat-value orange" id="statOutstanding">R0.00</div>
-                <div class="stat-sub muted" id="subOutstanding">—</div>
-              </div>
-            </div>
+          <!-- Step 1. On its own until the cash is counted. -->
+          <section class="setup-card" id="setupCard" hidden>
+            <h3>Count your cash 👋</h3>
+            <p>How much cash is in your shop right now? Count the till and your cash box.</p>
+            <form id="setupForm" novalidate>
+              <input class="form-control" id="startingCash" type="number" inputmode="decimal"
+                min="0.01" step="0.01" placeholder="e.g. 3000" aria-label="Cash in your shop, in rand" />
+              <button class="btn btn-primary" type="submit">Save</button>
+            </form>
+          </section>
 
-            <div class="stat-card">
-              <div class="stat-icon bg-red">⚠️</div>
-              <div>
-                <div class="stat-label">Overdue</div>
-                <div class="stat-value red" id="statOverdue">R0.00</div>
-                <div class="stat-sub muted" id="subOverdue">—</div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon bg-green-light">✓</div>
-              <div>
-                <div class="stat-label">Paid This Month</div>
-                <div class="stat-value green" id="statPaidThisMonth">R0.00</div>
-                <div class="stat-sub muted" id="subPaidThisMonth">—</div>
-              </div>
-            </div>
-          </div>
-
-          <h2 class="section-title">Quick Actions</h2>
-          <div class="actions-grid">
-            <a class="action-btn bg-green" href="add-customer.html">
-              <span class="action-icon">👤</span>Add Customer
+          <!-- Step 2, and every visit after it. -->
+          <div id="cashView" hidden>
+            <a class="cash-hero" href="transactions.html" id="cashHero">
+              <span class="cash-hero-icon" aria-hidden="true">💵</span>
+              <span>
+                <span class="cash-hero-label">Cash available</span><br />
+                <span class="cash-hero-amount" id="cashAvailable">R0</span>
+              </span>
             </a>
-            <a class="action-btn bg-orange" href="record-credit.html">
-              <span class="action-icon">🛍️</span>Record Credit
+
+            <!-- The 30% rule is detail, not a second headline. -->
+            <details class="cash-details">
+              <summary>
+                <span>Safe to draw</span>
+                <strong id="safeToUse">R0</strong>
+              </summary>
+              <div class="cash-details-body">
+                <div class="row-between">
+                  <span>Set aside</span>
+                  <strong id="keptForExpenses">R0</strong>
+                </div>
+                <p id="reserveHint"></p>
+              </div>
+            </details>
+
+            <a class="low-stock-line" id="lowStockLine" href="stock.html" hidden>
+              <span aria-hidden="true">📦</span>
+              <span id="lowStockText">Items running low</span>
+              <span class="tc-chevron" id="lowStockChevron"></span>
             </a>
-          </div>
 
-          <div class="panel-grid two-col mt-24">
-            <section class="panel">
-              <div class="panel-head">
-                <h2>Owes the Most</h2>
-                <a class="panel-link" href="customers.html">All customers</a>
-              </div>
-              <div class="panel-body" id="topDebtors"></div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head">
-                <h2>Overdue Accounts</h2>
-                <a class="panel-link" href="reports.html">Full report</a>
-              </div>
-              <div class="panel-body" id="overdueList"></div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head">
-                <h2>Recent Transactions</h2>
-                <a class="panel-link" href="transactions.html">See all</a>
-              </div>
-              <div class="panel-body" id="recentTransactions"></div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head">
-                <h2>Upcoming Reminders</h2>
-                <a class="panel-link" href="reminders.html">Manage</a>
-              </div>
-              <div class="panel-body" id="upcomingReminders"></div>
-            </section>
+            <button class="btn btn-primary mt-16" type="button" id="logMoneyBtn">
+              ＋ Log money
+            </button>
           </div>
         </main>
       </div>
@@ -112,6 +81,8 @@
 
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/cash-entry.js"></script>
+    <script src="js/home.js"></script>
   </body>
 </html>

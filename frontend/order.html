@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f8f7" />
+    <title>Create order · ThathaCash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/shell.css" />
+    <link rel="stylesheet" href="css/thathacash.css" />
+  </head>
+  <body class="tc" data-page="order" data-protected>
+    <div class="app-shell" id="appShell">
+      <div class="app-main">
+        <header class="tc-top">
+          <div class="tc-top-inner">
+            <a class="tc-icon-btn" href="dashboard.html" id="backBtn" aria-label="Back to Home"></a>
+            <h1>Create order</h1>
+          </div>
+        </header>
+
+        <main class="content">
+          <section class="order-hero">
+            <h2>Your suggested order</h2>
+            <p>Based on your stock and the cash you have available.</p>
+            <div class="order-hero-amount">🛒 <span id="orderTotal">R0</span></div>
+          </section>
+          <div class="budget-alert" id="budgetAlert" hidden></div>
+
+          <section class="tc-section">
+            <div class="tc-section-head"><h2>Items in your order</h2></div>
+            <div class="tc-card" id="orderLines"></div>
+            <p class="tc-hint">Products that are running low, in the amount you usually order.
+              Change the amounts or remove anything you don't need.</p>
+          </section>
+
+          <div class="order-actions sticky" id="orderActions" hidden>
+            <button class="btn btn-primary" type="button" id="sendBtn"></button>
+            <button class="btn btn-outline" type="button" id="logPurchaseBtn">
+              Paid for it? Log the stock purchase
+            </button>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/cash-entry.js"></script>
+    <script src="js/order.js"></script>
+  </body>
+</html>

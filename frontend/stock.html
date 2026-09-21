@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f8f7" />
+    <title>Stock · ThathaCash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/shell.css" />
+    <link rel="stylesheet" href="css/thathacash.css" />
+  </head>
+  <body class="tc" data-page="stock" data-protected>
+    <div class="app-shell" id="appShell">
+      <div class="app-main">
+        <header class="tc-top">
+          <div class="tc-top-inner">
+            <h1>Stock</h1>
+            <span class="spacer"></span>
+            <button class="tc-add-btn" type="button" id="addProductBtn">＋ Add product</button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="tc-search">
+            <span id="searchIcon"></span>
+            <input class="form-control" id="search" type="search" placeholder="Search products…"
+              aria-label="Search products" autocomplete="off" />
+          </div>
+
+          <div class="filter-bar" role="group" aria-label="Show">
+            <button class="filter-chip active" type="button" data-filter="ALL">All</button>
+            <button class="filter-chip" type="button" data-filter="LOW">Running low</button>
+            <button class="filter-chip" type="button" data-filter="GOOD">Good stock</button>
+          </div>
+
+          <div class="tc-card" id="stockList"></div>
+          <p class="tc-hint">Tap a product to update how many you have.</p>
+        </main>
+      </div>
+    </div>
+
+    <!-- Add a product, or update one (count + details). -->
+    <div class="modal" id="productModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="productTitle">
+        <div class="modal-head">
+          <h3 id="productTitle">Add product</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="productForm" novalidate>
+            <p class="form-error" id="productError" hidden></p>
+
+            <div class="form-group">
+              <label for="quantity">How many are in the shop now?</label>
+              <div class="stepper">
+                <button type="button" data-step="-1" aria-label="One less">−</button>
+                <input class="form-control" id="quantity" name="quantity" type="number"
+                  inputmode="numeric" min="0" step="1" value="0" />
+                <button type="button" data-step="1" aria-label="One more">+</button>
+              </div>
+            </div>
+
+            <details class="details-toggle" id="productDetails">
+              <summary>Edit details</summary>
+
+              <div class="form-group">
+                <label for="name">Product name</label>
+                <input class="form-control" id="name" name="name" type="text" maxlength="80"
+                  placeholder="e.g. Coca-Cola 2L" />
+              </div>
+
+              <div class="form-group">
+                <label for="price">Price you pay per unit (R)</label>
+                <input class="form-control" id="price" name="price" type="number"
+                  inputmode="decimal" min="0.01" step="0.01" placeholder="e.g. 28" />
+                <p class="form-hint">Used to work out what your next order will cost.</p>
+              </div>
+
+              <div class="form-row three">
+                <div class="form-group">
+                  <label for="lowStockLevel">Running low at</label>
+                  <input class="form-control" id="lowStockLevel" name="lowStockLevel" type="number"
+                    inputmode="numeric" min="0" step="1" value="5" />
+                </div>
+                <div class="form-group">
+                  <label for="reorderQuantity">Usually order</label>
+                  <input class="form-control" id="reorderQuantity" name="reorderQuantity"
+                    type="number" inputmode="numeric" min="1" step="1" value="10" />
+                </div>
+              </div>
+
+              <button class="btn btn-outline" type="button" id="deleteProductBtn">Delete product</button>
+            </details>
+
+            <button class="btn btn-primary mt-16" type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/stock.js"></script>
+  </body>
+</html>

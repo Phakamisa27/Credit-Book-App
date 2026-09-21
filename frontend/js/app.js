@@ -12,6 +12,13 @@ const App = (() => {
     return `${negative ? '-' : ''}R${grouped}.${cents}`;
   }
 
+  // Same, but leaves off ".00" on whole amounts: R4,200 rather than R4,200.00.
+  // Big headline numbers on ThathaCash screens are easier to read this way.
+  function formatRands(amount) {
+    const full = formatCurrency(amount);
+    return full.endsWith('.00') ? full.slice(0, -3) : full;
+  }
+
   const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -141,16 +148,34 @@ const App = (() => {
     return `<ul class="tx-items">${rows}</ul>`;
   }
 
+  // A picture for a product, guessed from its name. First match wins.
   function itemEmoji(item) {
     const map = {
-      bread: '🍞', milk: '🥛', airtime: '📱', soap: '🧼', toilet: '🧻',
-      maize: '🌽', oil: '🛢️', sugar: '🍬', rice: '🍚', egg: '🥚',
-      uniform: '👕', cement: '🧱', sand: '🏗️', cooldrink: '🥤',
+      bread: '🍞', milk: '🥛', airtime: '📱', soap: '🧼', sunlight: '🧼',
+      toilet: '🧻', maize: '🌽', mealie: '🌽', oil: '🫗', sugar: '🍬', salt: '🧂',
+      rice: '🍚', egg: '🥚', biscuit: '🍪', cookie: '🍪', chips: '🍟',
+      sweet: '🍬', cola: '🥤', coke: '🥤', fanta: '🥤', sprite: '🥤',
+      cooldrink: '🥤', juice: '🧃', water: '💧', tea: '☕', coffee: '☕',
+      beans: '🥫', tin: '🥫', fish: '🐟', chicken: '🍗', polony: '🌭',
+      flour: '🌾', nappy: '👶', nappies: '👶', washing: '🧺', matches: '🔥',
+      uniform: '👕', cement: '🧱', sand: '🏗️',
       paraffin: '🕯️', candle: '🕯️', payment: '💵', cash: '💵',
     };
     const key = String(item || '').toLowerCase();
     for (const k in map) if (key.includes(k)) return map[k];
     return '🛒';
+  }
+
+  // ThathaCash stock status pill. The status itself (LOW / GOOD) comes from
+  // the server; this only decides the words and colour.
+  function stockPill(item) {
+    if (item.quantity === 0) return '<span class="tc-pill low">Out of stock</span>';
+    if (item.status === 'LOW') return '<span class="tc-pill low">Running low</span>';
+    return '<span class="tc-pill good">Good</span>';
+  }
+
+  function unitsText(quantity) {
+    return `${quantity} unit${quantity === 1 ? '' : 's'}`;
   }
 
   // ----------------------------------------------------------------- toast --
@@ -216,26 +241,58 @@ const App = (() => {
     }
   }
 
+  // ----------------------------------------------------------------- icons --
+  // Simple line icons, drawn in the current text colour so they turn green
+  // when their menu item is active.
+  const svg = (paths) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
+  const ICONS = {
+    home: svg('<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/>'),
+    stock: svg('<path d="M4.5 8h15l-1.2 12H5.7L4.5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>'),
+    transactions: svg('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h3"/>'),
+    more: svg('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    logout: svg('<path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h10"/>'),
+    back: svg('<path d="M15 5l-7 7 7 7"/>'),
+    bell: svg('<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+    search: svg('<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>'),
+    chevron: svg('<path d="M9 5l7 7-7 7"/>'),
+    share: svg('<circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4M8.2 13.2l7.6 4"/>'),
+  };
+
+  // The ThathaCash shop mark: a green awning over a shopfront.
+  const LOGO_SVG = `<svg class="tc-logo" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="5" y="13" width="22" height="16" rx="2" fill="#0b5d34"/>
+      <path d="M3 5h26l-1.5 8.5h-23L3 5Z" fill="#1fa05c"/>
+      <path d="M9.5 5 8.8 13.5M16 5v8.5M22.5 5l.7 8.5" stroke="#fff" stroke-width="1.4" opacity=".7"/>
+      <rect x="12.5" y="19" width="7" height="10" rx="1" fill="#fff"/>
+    </svg>`;
+
   // ----------------------------------------------------------------- shell --
-  // Navigation is generated rather than pasted into 13 HTML files, so adding
-  // a page means editing one array.
-  // `short` is what the bottom bar uses — six items on a 360px phone leaves
-  // about 58px each, which "Transactions" does not fit into.
+  // Navigation is generated rather than pasted into every HTML file, so
+  // adding a page means editing one array.
   const NAV_ITEMS = [
-    { key: 'dashboard', label: 'Dashboard', short: 'Home', icon: '🏠', href: 'dashboard.html' },
-    { key: 'customers', label: 'Customers', short: 'Customers', icon: '👥', href: 'customers.html' },
-    { key: 'transactions', label: 'Transactions', short: 'History', icon: '📋', href: 'transactions.html' },
-    { key: 'reminders', label: 'Reminders', short: 'Reminders', icon: '🔔', href: 'reminders.html' },
-    { key: 'reports', label: 'Reports', short: 'Reports', icon: '📊', href: 'reports.html' },
-    { key: 'settings', label: 'Settings', short: 'Settings', icon: '⚙️', href: 'settings.html' },
+    { key: 'home', label: 'Home', icon: ICONS.home, href: 'dashboard.html' },
+    { key: 'stock', label: 'Stock', icon: ICONS.stock, href: 'stock.html' },
+    { key: 'transactions', label: 'Transactions', icon: ICONS.transactions, href: 'transactions.html' },
+    { key: 'more', label: 'More', icon: ICONS.more, href: 'settings.html' },
   ];
 
-  // Pages that are part of a section but are not the section's own nav entry.
+  // Pages that belong to a menu section without being its own entry.
+  // The old Credit Book pages still work by URL; they just sit under "More".
   const NAV_ALIASES = {
-    'add-customer': 'customers',
-    'edit-customer': 'customers',
-    'customer-profile': 'customers',
-    'record-credit': 'transactions',
+    dashboard: 'home',
+    order: 'home',
+    draws: 'transactions',
+    settings: 'more',
+    customers: 'more',
+    'add-customer': 'more',
+    'edit-customer': 'more',
+    'customer-profile': 'more',
+    'record-credit': 'more',
+    reminders: 'more',
+    reports: 'more',
   };
 
   function activeNavKey() {
@@ -246,7 +303,7 @@ const App = (() => {
   function renderSidebar() {
     const active = activeNavKey();
     const user = API.getCachedUser();
-    const businessName = (user && user.businessName) || 'Credit Book';
+    const businessName = (user && user.businessName) || 'Your shop';
 
     const links = NAV_ITEMS.map(
       (item) => `<a class="side-link ${item.key === active ? 'active' : ''}" href="${item.href}">
@@ -256,26 +313,26 @@ const App = (() => {
 
     return `<aside class="sidebar">
       <div class="side-brand">
-        <span class="side-brand-mark">📗</span>
+        <span class="side-brand-mark">${LOGO_SVG}</span>
         <span class="side-brand-text">
-          <strong>${escapeHtml(businessName)}</strong>
-          <small>Credit Book</small>
+          <strong>ThathaCash</strong>
+          <small data-bind="businessName">${escapeHtml(businessName)}</small>
         </span>
       </div>
       <nav class="side-nav">${links}</nav>
       <button type="button" class="side-link side-logout" id="sidebarLogout">
-        <span class="side-icon">🚪</span><span>Logout</span>
+        <span class="side-icon">${ICONS.logout}</span><span>Log out</span>
       </button>
     </aside>`;
   }
 
-  // Settings is on the bar too: below 1024px the sidebar is hidden, so this is
-  // the only route to the account screen — and to the Logout button on it.
+  // Below 1024px the sidebar is hidden and this bar is the menu.
   function renderBottomNav() {
     const active = activeNavKey();
     const links = NAV_ITEMS.map(
-      (item) => `<a class="nav-item ${item.key === active ? 'active' : ''}" href="${item.href}">
-          <span class="nav-icon">${item.icon}</span>${item.short}
+      (item) => `<a class="nav-item ${item.key === active ? 'active' : ''}" href="${item.href}"
+          ${item.key === active ? 'aria-current="page"' : ''}>
+          <span class="nav-icon">${item.icon}</span>${item.label}
         </a>`
     ).join('');
     return `<nav class="bottom-nav">${links}</nav>`;
@@ -326,7 +383,7 @@ const App = (() => {
       const user = await API.auth.me();
       API.setSession(API.getToken(), user);
       document.querySelectorAll('[data-bind="businessName"]').forEach((el) => {
-        el.textContent = user.businessName || 'Credit Book';
+        el.textContent = user.businessName || 'Your shop';
       });
       return user;
     } catch (_) {
@@ -341,7 +398,10 @@ const App = (() => {
   });
 
   return {
+    ICONS,
+    LOGO_SVG,
     formatCurrency,
+    formatRands,
     formatDate,
     formatDateShort,
     formatDateTime,
@@ -353,6 +413,8 @@ const App = (() => {
     avatarFor,
     itemEmoji,
     itemLinesHtml,
+    stockPill,
+    unitsText,
     toast,
     toastError,
     toastSuccess,

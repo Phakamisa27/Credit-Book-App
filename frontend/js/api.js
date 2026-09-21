@@ -124,14 +124,14 @@ const API = (() => {
       if (!payload) {
         if (res.status === 405 || res.status === 501) {
           throw new ApiError(
-            `Reached a web server that cannot run the Credit Book API (${res.status}). ` +
+            `Reached a web server that cannot run the ThathaCash API (${res.status}). ` +
               `Make sure the backend is running, then open http://localhost:${BACKEND_PORT}`,
             res.status
           );
         }
         if (res.status === 404) {
           throw new ApiError(
-            `The Credit Book API was not found at ${BASE_URL}. ` +
+            `The ThathaCash API was not found at ${BASE_URL}. ` +
               `Make sure the backend is running, then open http://localhost:${BACKEND_PORT}`,
             res.status
           );
@@ -227,10 +227,32 @@ const API = (() => {
   };
 
   // ---------------------------------------------------------------- items --
+  // Products. Credit Book quick items, and ThathaCash stock.
   const items = {
     list: () => get('/items'),
     create: (data) => post('/items', data),
+    update: (id, data) => patch(`/items/${id}`, data),
     remove: (id) => del(`/items/${id}`),
+  };
+
+  // ============================================================ ThathaCash ==
+  // ----------------------------------------------------------------- cash --
+  // type: OPENING (starting cash) | INCOME | EXPENSE | STOCK | DRAW
+  const cash = {
+    list: (params) => get(`/cash${qs(params)}`), // { entries, totals }
+    summary: () => get('/cash/summary'),
+    create: (data) => post('/cash', data),
+    remove: (id) => del(`/cash/${id}`),
+  };
+
+  // Everything the Home screen shows, in one request.
+  const home = {
+    get: () => get('/home'),
+  };
+
+  // The suggested next order from the wholesaler.
+  const order = {
+    get: () => get('/order'),
   };
 
   return {
@@ -248,5 +270,8 @@ const API = (() => {
     reminders,
     reports,
     items,
+    cash,
+    home,
+    order,
   };
 })();

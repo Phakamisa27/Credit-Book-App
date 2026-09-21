@@ -1,19 +1,25 @@
-/* Credit Book — shared base styles */
+/* ThathaCash — shared base styles (colour tokens live here) */
 
 :root {
-  --green: #1f7a4d;
-  --green-dark: #185f3c;
-  --green-light: #2e9d66;
-  --green-soft: #e8f3ec;
+  --green: #13824a;
+  --green-dark: #0b5d34;
+  --green-light: #1fa05c;
+  --green-soft: #e6f4ec;
+  --blue: #2d6cb0;
+  --blue-soft: #e8f0fa;
+  --red: #d63b3b;
+  --red-soft: #fdecec;
+  --amber: #9a6100;
+  --amber-soft: #fff4dc;
   --orange: #e8722a;
   --orange-light: #f08a47;
-  --bg: #f4f6f5;
+  --bg: #f6f8f7;
   --card: #ffffff;
-  --text: #1d2520;
-  --muted: #7a857f;
-  --border: #e7ece9;
-  --danger: #d34a3a;
-  --shadow: 0 6px 18px rgba(31, 122, 77, 0.08);
+  --text: #17211b;
+  --muted: #6b7770;
+  --border: #e5ebe7;
+  --danger: #d63b3b;
+  --shadow: 0 4px 16px rgba(16, 60, 36, 0.07);
   --radius: 18px;
   --radius-sm: 12px;
   --page: 1200px;
@@ -31,6 +37,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* The `hidden` attribute must win over any display: flex/grid rule. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -38,11 +49,11 @@ body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
   margin: 0;
   min-height: 100vh;
-  background: #f3f6f4;
+  background: var(--bg);
   color: var(--text);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -422,7 +433,7 @@ select.form-control {
   gap: 3px;
   text-decoration: none;
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -434,8 +445,24 @@ select.form-control {
   font-size: 1.25rem;
 }
 
+/* The menu icons are inline SVGs (see NAV_ITEMS in app.js). */
+.nav-item .nav-icon svg,
+.side-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  margin: 0 auto;
+}
+
+.side-brand-mark svg {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
 .nav-item.active {
   color: var(--green);
+  font-weight: 700;
 }
 
 /* Utilities */

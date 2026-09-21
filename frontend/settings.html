@@ -3,126 +3,228 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#1f7a4d" />
-    <title>Settings · Credit Book</title>
+    <meta name="theme-color" content="#f6f8f7" />
+    <title>More · ThathaCash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/shell.css" />
     <link rel="stylesheet" href="css/settings.css" />
+    <link rel="stylesheet" href="css/thathacash.css" />
   </head>
-  <body data-page="settings" data-protected>
+  <body class="tc" data-page="settings" data-protected>
     <div class="app-shell" id="appShell">
       <div class="app-main">
-        <header class="app-header">
-          <div class="header-row">
-            <a class="icon-btn" href="dashboard.html" title="Back">←</a>
-            <h1>Settings</h1>
-          </div>
+        <header class="tc-top">
+          <div class="tc-top-inner"><h1>Settings</h1></div>
         </header>
 
         <main class="content">
-          <section class="panel">
-            <div class="panel-head"><h2>Business Profile</h2></div>
-            <div class="panel-body">
-              <div class="profile-photo-row">
-                <div class="profile-photo-frame">
-                  <span id="profilePhotoPlaceholder" aria-hidden="true">🏪</span>
-                  <img id="profilePhoto" alt="Business profile photo" hidden />
-                </div>
-                <div class="profile-photo-actions">
-                  <button class="btn btn-outline btn-sm" type="button" id="uploadPhotoBtn">
-                    Upload photo
-                  </button>
-                  <button class="btn btn-outline btn-sm" type="button" id="removeProfilePhoto" hidden>
-                    Remove
-                  </button>
-                  <input type="file" id="profilePhotoInput" accept="image/*" hidden />
-                </div>
-              </div>
+          <div class="tc-card">
+            <button class="tc-row" type="button" data-open="profileModal">
+              <span class="profile-avatar" id="avatarSmall" aria-hidden="true">👤</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title" id="ownerName">Your profile</span>
+                <span class="tc-row-sub" id="ownerEmail">—</span>
+              </span>
+              <span class="tc-chevron" data-chevron></span>
+            </button>
+          </div>
 
-              <form id="profileForm" autocomplete="off" novalidate>
-                <p id="profileError" class="form-error" hidden></p>
+          <div class="tc-card mt-16">
+            <button class="tc-row" type="button" data-open="businessModal">
+              <span class="tc-row-icon" aria-hidden="true">🏪</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">Business information</span>
+                <span class="tc-row-sub" data-bind="businessName">Your shop</span>
+              </span>
+              <span class="tc-chevron" data-chevron></span>
+            </button>
 
-                <div class="form-row two">
-                  <div class="form-group">
-                    <label for="fullName">Your Name *</label>
-                    <input class="form-control" id="fullName" name="fullName" type="text" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="businessName">Business Name</label>
-                    <input class="form-control" id="businessName" name="businessName" type="text"
-                      placeholder="e.g. Phaka's Spaza Shop" />
-                  </div>
-                </div>
+            <a class="tc-row" href="draws.html">
+              <span class="tc-row-icon" aria-hidden="true">👛</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">Draws</span>
+                <span class="tc-row-sub">Money you take from the shop</span>
+              </span>
+              <span class="tc-chevron" data-chevron></span>
+            </a>
 
-                <div class="form-group">
-                  <label for="businessPhone">Business Phone</label>
-                  <input class="form-control" id="businessPhone" name="businessPhone" type="tel"
-                    inputmode="numeric" maxlength="12" placeholder="e.g. 074 099 8882" />
-                  <p class="form-hint">Shown to you only — reminders are sent from your own phone.</p>
-                </div>
+            <button class="tc-row" type="button" id="notificationsRow">
+              <span class="tc-row-icon" aria-hidden="true">🔔</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">Notifications</span>
+                <span class="tc-row-sub">Stock alerts, reminders</span>
+              </span>
+              <span class="tc-pill soon">Coming soon</span>
+            </button>
 
-                <button class="btn btn-primary" type="submit">Save Profile</button>
-              </form>
-            </div>
-          </section>
+            <button class="tc-row" type="button" data-open="helpModal">
+              <span class="tc-row-icon" aria-hidden="true">❓</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">Help &amp; Support</span>
+                <span class="tc-row-sub">How ThathaCash works out your numbers</span>
+              </span>
+              <span class="tc-chevron" data-chevron></span>
+            </button>
 
-          <section class="panel mt-24">
-            <div class="panel-head"><h2>Account</h2></div>
-            <div class="panel-body">
-              <div class="table-wrap">
-                <table class="data-table">
-                  <tbody>
-                    <tr><td>Email</td><td class="num" id="accountEmail">—</td></tr>
-                    <tr><td>Account created</td><td class="num" id="accountCreated">—</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
+            <button class="tc-row" type="button" data-open="aboutModal">
+              <span class="tc-row-icon" aria-hidden="true">ℹ️</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">About</span>
+                <span class="tc-row-sub">ThathaCash v0.1</span>
+              </span>
+              <span class="tc-chevron" data-chevron></span>
+            </button>
+          </div>
 
-          <section class="panel mt-24">
-            <div class="panel-head"><h2>Change Password</h2></div>
-            <div class="panel-body">
-              <form id="passwordForm" autocomplete="off" novalidate>
-                <p id="passwordError" class="form-error" hidden></p>
-
-                <div class="form-group">
-                  <label for="currentPassword">Current Password *</label>
-                  <input class="form-control" id="currentPassword" name="currentPassword"
-                    type="password" autocomplete="current-password" required />
-                </div>
-
-                <div class="form-row two">
-                  <div class="form-group">
-                    <label for="newPassword">New Password *</label>
-                    <input class="form-control" id="newPassword" name="newPassword" type="password"
-                      autocomplete="new-password" minlength="8" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="confirmPassword">Confirm New Password *</label>
-                    <input class="form-control" id="confirmPassword" name="confirmPassword"
-                      type="password" autocomplete="new-password" minlength="8" required />
-                  </div>
-                </div>
-
-                <p class="form-hint">At least 8 characters.</p>
-                <button class="btn btn-primary" type="submit">Update Password</button>
-              </form>
-            </div>
-          </section>
-
-          <section class="panel mt-24">
-            <div class="panel-head"><h2>Session</h2></div>
-            <div class="panel-body">
-              <button class="btn btn-danger" type="button" data-action="logout">Logout</button>
-            </div>
-          </section>
+          <button class="btn logout-btn" type="button" data-action="logout">Log out</button>
         </main>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ profile -->
+    <div class="modal" id="profileModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <div class="modal-head">
+          <h3 id="profileTitle">Your profile</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="profile-photo-row">
+            <div class="profile-photo-frame">
+              <span id="profilePhotoPlaceholder" aria-hidden="true">👤</span>
+              <img id="profilePhoto" alt="Your profile photo" hidden />
+            </div>
+            <div class="profile-photo-actions">
+              <button class="btn btn-outline btn-sm" type="button" id="uploadPhotoBtn">Upload photo</button>
+              <button class="btn btn-outline btn-sm" type="button" id="removeProfilePhoto" hidden>Remove</button>
+              <input type="file" id="profilePhotoInput" accept="image/*" hidden />
+            </div>
+          </div>
+
+          <form id="profileForm" autocomplete="off" novalidate>
+            <p id="profileError" class="form-error" hidden></p>
+            <div class="form-group">
+              <label for="fullName">Your name</label>
+              <input class="form-control" id="fullName" name="fullName" type="text" required />
+            </div>
+            <div class="form-group">
+              <label for="accountEmail">Email</label>
+              <input class="form-control" id="accountEmail" type="email" disabled />
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+          </form>
+
+          <details class="details-toggle">
+            <summary>Change password</summary>
+            <form id="passwordForm" autocomplete="off" novalidate>
+              <p id="passwordError" class="form-error" hidden></p>
+              <div class="form-group">
+                <label for="currentPassword">Current password</label>
+                <input class="form-control" id="currentPassword" name="currentPassword"
+                  type="password" autocomplete="current-password" required />
+              </div>
+              <div class="form-group">
+                <label for="newPassword">New password</label>
+                <input class="form-control" id="newPassword" name="newPassword" type="password"
+                  autocomplete="new-password" minlength="8" required />
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Confirm new password</label>
+                <input class="form-control" id="confirmPassword" name="confirmPassword"
+                  type="password" autocomplete="new-password" minlength="8" required />
+                <p class="form-hint">At least 8 characters.</p>
+              </div>
+              <button class="btn btn-outline" type="submit">Update password</button>
+            </form>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- ----------------------------------------------------- business -->
+    <div class="modal" id="businessModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="businessTitle">
+        <div class="modal-head">
+          <h3 id="businessTitle">Business information</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="businessForm" autocomplete="off" novalidate>
+            <p id="businessError" class="form-error" hidden></p>
+            <div class="form-group">
+              <label for="businessName">Shop name</label>
+              <input class="form-control" id="businessName" name="businessName" type="text"
+                maxlength="120" placeholder="e.g. Sipho's Spaza" />
+            </div>
+            <div class="form-group">
+              <label for="businessPhone">Shop phone number</label>
+              <input class="form-control" id="businessPhone" name="businessPhone" type="tel"
+                inputmode="numeric" maxlength="12" placeholder="e.g. 074 099 8882" />
+              <p class="form-hint">Added to orders you send your wholesaler.</p>
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------------- help -->
+    <div class="modal" id="helpModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="modal-head">
+          <h3 id="helpTitle">Help &amp; Support</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body faq">
+          <h4>What is "Cash available"?</h4>
+          <p>Your starting cash, plus all the money in you logged, minus expenses, stock
+            purchases and draws. Log every day, and it matches the cash in your shop.</p>
+
+          <h4>What is "Safe to draw"?</h4>
+          <p>70% of your cash. The other 30% is kept as a buffer for emergencies, so drawing
+            money — or spending on stock — never leaves you with nothing.</p>
+
+          <h4>When is a product "Running low"?</h4>
+          <p>When the number in your shop is at or below the "Running low at" number you set
+            for that product.</p>
+
+          <h4>What is a draw?</h4>
+          <p>Money you take out of the shop for yourself or your family. It is not a shop
+            expense, so ThathaCash keeps it separate.</p>
+
+          <h4>I made a mistake</h4>
+          <p>Go to Transactions, tap the entry, and delete it. Then log it again.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- -------------------------------------------------------- about -->
+    <div class="modal" id="aboutModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+        <div class="modal-head">
+          <h3 id="aboutTitle">About</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="aboutLogo"></div>
+          <h2 class="mb-0">ThathaCash</h2>
+          <p class="muted mt-8">Your shop, your control.</p>
+          <p>Simple tools to manage your cash and stock, and know when to restock.</p>
+          <p class="muted">Version 0.1 · early test version</p>
+        </div>
       </div>
     </div>
 
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/modal.js"></script>
     <script src="js/settings.js"></script>
   </body>
 </html>

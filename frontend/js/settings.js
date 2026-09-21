@@ -1,152 +1,158 @@
-// settings.js — business profile, profile photo, and password change.
+// settings.js — the "More" screen: profile, business info, password, help.
+// Everything saves through the existing /api/auth/me endpoints.
 
 (() => {
+  const modals = {};
+
+  function showError(id, message) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.hidden = !message;
+  }
+
+  // Puts the user's details everywhere they appear on this page.
+  function renderUser(user) {
+    App.setText('ownerName', user.fullName || 'Your profile');
+    App.setText('ownerEmail', user.email || '');
+    document.querySelectorAll('[data-bind="businessName"]').forEach((el) => {
+      el.textContent = user.businessName || 'Add your shop name';
+    });
+
+    const small = document.getElementById('avatarSmall');
+    small.innerHTML = user.profileImage
+      ? `<img src="${App.escapeHtml(user.profileImage)}" alt="" />`
+      : '👤';
+
+    document.getElementById('fullName').value = user.fullName || '';
+    document.getElementById('accountEmail').value = user.email || '';
+    document.getElementById('businessName').value = user.businessName || '';
+    document.getElementById('businessPhone').value = user.businessPhone || '';
+    renderPhoto(user.profileImage);
+  }
+
+  function saved(user, message) {
+    API.setSession(API.getToken(), user);
+    renderUser(user);
+    App.toastSuccess(message);
+  }
+
+  // ------------------------------------------------------------ profile --
   function initProfileForm() {
     const form = document.getElementById('profileForm');
-    if (!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showError('profileError', '');
 
-    const errorEl = document.getElementById('profileError');
-    App.bindPhoneInput(form.businessPhone);
+      const fullName = form.elements.fullName.value.trim();
+      if (!fullName) return showError('profileError', 'Please enter your name.');
 
-    async function load() {
-      try {
-        const user = await API.auth.me();
-        form.fullName.value = user.fullName || '';
-        form.businessName.value = user.businessName || '';
-        form.businessPhone.value = user.businessPhone || '';
-        App.setText('accountEmail', user.email);
-        App.setText('accountCreated', App.formatDateTime(user.createdAt));
-        renderPhoto(user.profileImage);
-      } catch (err) {
-        App.handleError(err);
-      }
-    }
+      await App.withBusy(form.querySelector('button[type="submit"]'), async () => {
+        try {
+          saved(await API.auth.updateMe({ fullName }), 'Profile saved');
+          modals.profileModal.close();
+        } catch (err) {
+          showError('profileError', err.message);
+        }
+      });
+    });
+  }
+
+  // ----------------------------------------------------------- business --
+  function initBusinessForm() {
+    const form = document.getElementById('businessForm');
+    App.bindPhoneInput(form.elements.businessPhone);
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      errorEl.hidden = true;
-
-      const fullName = form.fullName.value.trim();
-      if (!fullName) {
-        errorEl.textContent = 'Please enter your name.';
-        errorEl.hidden = false;
-        return;
-      }
+      showError('businessError', '');
 
       await App.withBusy(form.querySelector('button[type="submit"]'), async () => {
         try {
           const user = await API.auth.updateMe({
-            fullName,
-            businessName: form.businessName.value.trim(),
-            businessPhone: form.businessPhone.value.trim(),
+            businessName: form.elements.businessName.value.trim(),
+            businessPhone: form.elements.businessPhone.value.trim(),
           });
-          API.setSession(API.getToken(), user);
-          App.toastSuccess('Profile saved');
-          document.querySelectorAll('[data-bind="businessName"]').forEach((el) => {
-            el.textContent = user.businessName || 'Credit Book';
-          });
-          // The sidebar caches the business name, so refresh it too.
-          const brand = document.querySelector('.side-brand-text strong');
-          if (brand) brand.textContent = user.businessName || 'Credit Book';
+          saved(user, 'Business information saved');
+          modals.businessModal.close();
         } catch (err) {
-          errorEl.textContent = err.message;
-          errorEl.hidden = false;
+          showError('businessError', err.message);
         }
       });
     });
-
-    load();
   }
 
+  // -------------------------------------------------------------- photo --
   function renderPhoto(dataUri) {
     const img = document.getElementById('profilePhoto');
     const placeholder = document.getElementById('profilePhotoPlaceholder');
     const removeBtn = document.getElementById('removeProfilePhoto');
-    if (!img || !placeholder) return;
 
     if (dataUri) {
       img.src = dataUri;
       img.hidden = false;
       placeholder.hidden = true;
-      if (removeBtn) removeBtn.hidden = false;
+      removeBtn.hidden = false;
     } else {
       img.removeAttribute('src');
       img.hidden = true;
       placeholder.hidden = false;
-      if (removeBtn) removeBtn.hidden = true;
+      removeBtn.hidden = true;
     }
   }
 
   function initPhotoUpload() {
     const input = document.getElementById('profilePhotoInput');
-    if (!input) return;
-
-    document.getElementById('uploadPhotoBtn')?.addEventListener('click', () => input.click());
+    document.getElementById('uploadPhotoBtn').addEventListener('click', () => input.click());
 
     input.addEventListener('change', () => {
       const file = input.files && input.files[0];
+      input.value = '';
       if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        App.toastError('Please choose an image file');
-        input.value = '';
-        return;
-      }
+      if (!file.type.startsWith('image/')) return App.toastError('Please choose an image file');
       if (file.size > 2 * 1024 * 1024) {
-        App.toastError('That photo is too large. Please use one under 2MB.');
-        input.value = '';
-        return;
+        return App.toastError('That photo is too large. Please use one under 2MB.');
       }
 
       const reader = new FileReader();
       reader.onload = async () => {
         try {
-          const user = await API.auth.updateMe({ profileImage: reader.result });
-          API.setSession(API.getToken(), user);
-          renderPhoto(user.profileImage);
-          App.toastSuccess('Photo saved');
+          saved(await API.auth.updateMe({ profileImage: reader.result }), 'Photo saved');
         } catch (err) {
           App.handleError(err);
         }
       };
       reader.onerror = () => App.toastError('Could not read that image');
       reader.readAsDataURL(file);
-      input.value = '';
     });
 
-    document.getElementById('removeProfilePhoto')?.addEventListener('click', async () => {
+    document.getElementById('removeProfilePhoto').addEventListener('click', async () => {
       try {
-        const user = await API.auth.updateMe({ profileImage: '' });
-        API.setSession(API.getToken(), user);
-        renderPhoto('');
-        App.toastSuccess('Photo removed');
+        saved(await API.auth.updateMe({ profileImage: '' }), 'Photo removed');
       } catch (err) {
         App.handleError(err);
       }
     });
   }
 
+  // ----------------------------------------------------------- password --
   function initPasswordForm() {
     const form = document.getElementById('passwordForm');
-    if (!form) return;
-
-    const errorEl = document.getElementById('passwordError');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      errorEl.hidden = true;
+      showError('passwordError', '');
 
-      function fail(message) {
-        errorEl.textContent = message;
-        errorEl.hidden = false;
+      const currentPassword = form.elements.currentPassword.value;
+      const newPassword = form.elements.newPassword.value;
+      const confirmPassword = form.elements.confirmPassword.value;
+
+      if (!currentPassword) return showError('passwordError', 'Enter your current password.');
+      if (newPassword.length < 8) {
+        return showError('passwordError', 'New password must be at least 8 characters.');
       }
-
-      const currentPassword = form.currentPassword.value;
-      const newPassword = form.newPassword.value;
-      const confirmPassword = form.confirmPassword.value;
-
-      if (!currentPassword) return fail('Enter your current password.');
-      if (newPassword.length < 8) return fail('New password must be at least 8 characters.');
-      if (newPassword !== confirmPassword) return fail('New passwords do not match.');
+      if (newPassword !== confirmPassword) {
+        return showError('passwordError', 'New passwords do not match.');
+      }
 
       await App.withBusy(form.querySelector('button[type="submit"]'), async () => {
         try {
@@ -154,16 +160,46 @@
           form.reset();
           App.toastSuccess('Password updated');
         } catch (err) {
-          fail(err.message);
+          showError('passwordError', err.message);
         }
       });
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  // --------------------------------------------------------------- init --
+  document.addEventListener('DOMContentLoaded', async () => {
     if (document.body.dataset.page !== 'settings') return;
+
+    ['profileModal', 'businessModal', 'helpModal', 'aboutModal'].forEach((id) => {
+      modals[id] = Modal.create(id);
+    });
+    document.querySelectorAll('[data-open]').forEach((row) => {
+      row.addEventListener('click', () => modals[row.dataset.open].open());
+    });
+    document.querySelectorAll('[data-chevron]').forEach((el) => {
+      el.innerHTML = App.ICONS.chevron;
+    });
+    document.getElementById('aboutLogo').innerHTML = App.LOGO_SVG.replace(
+      'class="tc-logo"',
+      'class="tc-logo" style="width:64px;height:64px"'
+    );
+
+    // Not built yet. Tapping it still tells us owners want it.
+    document.getElementById('notificationsRow').addEventListener('click', () => {
+      App.toast('Stock alerts are coming soon.');
+    });
+
     initProfileForm();
+    initBusinessForm();
     initPhotoUpload();
     initPasswordForm();
+
+    const cached = API.getCachedUser();
+    if (cached) renderUser(cached);
+    try {
+      renderUser(await API.auth.me());
+    } catch (err) {
+      App.handleError(err);
+    }
   });
 })();
