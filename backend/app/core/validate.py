@@ -103,6 +103,29 @@ def require_enum(value: object, allowed: list[str], field: str) -> str:
     return raw
 
 
+def require_whole_number(
+    value: object, field: str, *, minimum: int = 0, maximum: int = 100_000
+) -> int:
+    """Stock counts: 0, 1, 2… never 2.5, never "abc", never negative."""
+    if isinstance(value, bool) or value is None:
+        raise ApiError.bad_request(f"{field} must be a whole number.")
+    if isinstance(value, str):
+        if not re.fullmatch(r"\s*-?\d+\s*", value):
+            raise ApiError.bad_request(f"{field} must be a whole number.")
+        value = int(value)
+    if isinstance(value, float):
+        if not value.is_integer():
+            raise ApiError.bad_request(f"{field} must be a whole number.")
+        value = int(value)
+    if not isinstance(value, int):
+        raise ApiError.bad_request(f"{field} must be a whole number.")
+    if value < minimum:
+        raise ApiError.bad_request(f"{field} must be at least {minimum}.")
+    if value > maximum:
+        raise ApiError.bad_request(f"{field} is too large.")
+    return value
+
+
 def optional_gender(value: object) -> str | None:
     if value is None or str(value).strip() == "":
         return None

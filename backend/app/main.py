@@ -21,8 +21,8 @@ from app.core.errors import fail, register_exception_handlers
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
 app = FastAPI(
-    title="Credit Book API",
-    description="REST API for the Credit Book app — digital credit ledger for a small business owner",
+    title="ThathaCash API",
+    description="ThathaCash — cash-flow and stock for spaza shops, built on the Credit Book API",
     version="2.0.0",
     docs_url="/api/docs",
     redoc_url=None,

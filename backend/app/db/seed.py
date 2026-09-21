@@ -165,13 +165,29 @@ CUSTOMERS: list[dict[str, Any]] = [
     },
 ]
 
+# ThathaCash stock. `price` is what the owner pays per unit; `low` is the
+# running-low level and `reorder` how many they usually buy.
 ITEMS = [
-    {"name": "Bread", "price": money("18.50")},
-    {"name": "Milk 2L", "price": money("34.99")},
-    {"name": "Airtime R30", "price": money("30")},
-    {"name": "Maize meal 5kg", "price": money("79.99")},
-    {"name": "Cooking oil 750ml", "price": money("42.50")},
-    {"name": "Sugar 2.5kg", "price": money("64.99")},
+    {"name": "Coca-Cola 2L", "price": money("28"), "quantity": 5, "low": 6, "reorder": 12},
+    {"name": "Bread", "price": money("16"), "quantity": 3, "low": 5, "reorder": 20},
+    {"name": "Milk 1L", "price": money("18"), "quantity": 12, "low": 6, "reorder": 12},
+    {"name": "Sunlight Soap", "price": money("14"), "quantity": 8, "low": 4, "reorder": 10},
+    {"name": "Biscuits", "price": money("12"), "quantity": 6, "low": 5, "reorder": 12},
+    {"name": "Cooking Oil 750ml", "price": money("38.50"), "quantity": 2, "low": 4, "reorder": 6},
+    {"name": "Sugar 2kg", "price": money("42"), "quantity": 10, "low": 4, "reorder": 6},
+    {"name": "Maize Meal 2kg", "price": money("30"), "quantity": 4, "low": 5, "reorder": 10},
+]
+
+# ThathaCash money in and out. Adds up to R4,200 cash available.
+CASH_ENTRIES = [
+    {"type": "OPENING", "amount": money("3000"), "note": "Cash in the till", "daysAgo": 9},
+    {"type": "INCOME", "amount": money("1250"), "note": "Customer sales", "daysAgo": 6},
+    {"type": "STOCK", "amount": money("1800"), "note": "Wholesaler", "daysAgo": 5},
+    {"type": "INCOME", "amount": money("980"), "note": "Customer sales", "daysAgo": 4},
+    {"type": "DRAW", "amount": money("200"), "note": "Personal", "daysAgo": 3},
+    {"type": "EXPENSE", "amount": money("350"), "note": "Electricity", "daysAgo": 2},
+    {"type": "INCOME", "amount": money("1450"), "note": "Customer sales", "daysAgo": 1},
+    {"type": "DRAW", "amount": money("130"), "note": "Transport", "daysAgo": 0},
 ]
 
 
@@ -206,11 +222,35 @@ def seed() -> None:
         # Clear this account's data only. Cascades handle transactions/reminders.
         session.execute(text("DELETE FROM customers WHERE user_id = :uid"), {"uid": user_id})
         session.execute(text("DELETE FROM items WHERE user_id = :uid"), {"uid": user_id})
+        session.execute(text("DELETE FROM cash_entries WHERE user_id = :uid"), {"uid": user_id})
 
         for item in ITEMS:
             session.execute(
-                text("INSERT INTO items (user_id, name, price) VALUES (:uid, :name, :price)"),
-                {"uid": user_id, "name": item["name"], "price": item["price"]},
+                text(
+                    """
+                    INSERT INTO items
+                      (user_id, name, price, quantity, low_stock_level, reorder_quantity)
+                    VALUES (:uid, :name, :price, :quantity, :low, :reorder)
+                    """
+                ),
+                {"uid": user_id, **item},
+            )
+
+        for entry in CASH_ENTRIES:
+            session.execute(
+                text(
+                    """
+                    INSERT INTO cash_entries (user_id, type, amount, note, entry_date)
+                    VALUES (:uid, :type, :amount, :note, :entry_date)
+                    """
+                ),
+                {
+                    "uid": user_id,
+                    "type": entry["type"],
+                    "amount": entry["amount"],
+                    "note": entry["note"],
+                    "entry_date": date.today() - timedelta(days=entry["daysAgo"]),
+                },
             )
 
         transaction_count = 0
@@ -336,7 +376,8 @@ def seed() -> None:
     print(f"  Customers    {len(CUSTOMERS)}")
     print(f"  Transactions {transaction_count}")
     print(f"  Line items   {item_count}")
-    print(f"  Quick items  {len(ITEMS)}")
+    print(f"  Products     {len(ITEMS)}")
+    print(f"  Cash entries {len(CASH_ENTRIES)}")
     print()
     print("  Test login — DEVELOPMENT ONLY")
     print(f"    Email    {SEED_EMAIL}")

@@ -492,3 +492,115 @@ is summed in the browser.
 
 ### DELETE /api/items/{id}
 **Auth** yes · **200** `{ "message": "Item deleted." }` · **404** `Item not found.`
+
+---
+
+# ThathaCash endpoints
+
+Added for the ThathaCash validation MVP (migration `0002`). Same conventions as
+above: `{ "success": true, "data": … }`, Bearer token on every endpoint, money
+as JSON numbers, dates as `YYYY-MM-DD`. The rules behind every derived number
+are in `app/services/shop_rules.py`.
+
+## Products / stock (extends Items)
+
+The item object now also carries stock fields. `status` is derived, never stored:
+`LOW` when `quantity <= lowStockLevel`, otherwise `GOOD`.
+
+```json
+{
+  "id": 7, "name": "Coca-Cola 2L", "price": 28,
+  "quantity": 5, "lowStockLevel": 6, "reorderQuantity": 12,
+  "status": "LOW", "createdAt": "2026-09-17T06:49:56.649Z"
+}
+```
+
+`price` is what the owner pays per unit; it prices the suggested order.
+
+### POST /api/items
+`name` and `price` required. `quantity` (default 0), `lowStockLevel` (default 5)
+and `reorderQuantity` (default 10, minimum 1) are optional whole numbers, so the
+original `{ "name", "price" }` body still works.
+
+### PATCH /api/items/{id}
+Any of `name`, `price`, `quantity`, `lowStockLevel`, `reorderQuantity`. Only the
+keys sent change. **200** the updated item.
+
+| Status | Message |
+|---|---|
+| 400 | `Quantity must be a whole number.` / `Quantity must be at least 0.` / `Order quantity must be at least 1.` / `Price must be greater than zero.` |
+| 404 | `Product not found.` |
+
+## Cash entries
+
+`type` is one of:
+
+| type | Owner sees | Cash |
+|---|---|---|
+| `OPENING` | Starting cash | in |
+| `INCOME` | Money in | in |
+| `EXPENSE` | Expense | out |
+| `STOCK` | Stock purchase | out |
+| `DRAW` | Draw | out |
+
+```json
+{ "id": 3, "type": "DRAW", "amount": 200, "note": "Personal",
+  "date": "2026-09-17", "createdAt": "2026-09-17T08:10:00.000Z" }
+```
+
+### POST /api/cash · 201
+```json
+{ "type": "DRAW", "amount": 200, "note": "Personal", "date": "2026-09-17" }
+```
+`note` optional (≤ 200 chars). `date` optional, defaults to today.
+
+| Status | Message |
+|---|---|
+| 400 | `Type must be one of: OPENING, INCOME, EXPENSE, STOCK, DRAW.` / `Amount must be greater than zero.` / `Amount cannot have more than two decimal places.` / `Date must be in YYYY-MM-DD format.` |
+
+### GET /api/cash?type=&from=&to=
+Newest first. `from`/`to` inclusive. `totals` always covers **every type** in the
+period, even when `type` narrows the list.
+
+```json
+{
+  "entries": [ … ],
+  "totals": { "opening": 3000, "income": 3680, "expenses": 350,
+              "stock": 1800, "draws": 330, "moneyOut": 2480 }
+}
+```
+
+### GET /api/cash/summary
+```json
+{ "cashAvailable": 4200, "keptForExpenses": 1260, "availableForStock": 2940,
+  "reservePercent": 30, "drawsThisMonth": 330, "hasEntries": true }
+```
+Cash available = opening + income − expenses − stock − draws (all time).
+Available for stock = 70%, rounded **down** to whole rands. Both parts are 0 when
+cash is 0 or negative.
+
+### DELETE /api/cash/{id}
+**200** `{ "message": "Entry deleted." }` · **404** `Entry not found.`
+
+## GET /api/home
+Everything the Home screen shows, in one request.
+```json
+{
+  "cash": { …same as /cash/summary… },
+  "order": { "total": 1187, "itemCount": 4, "withinBudget": true },
+  "stock": { "items": [ …first 5, running low first… ], "lowCount": 4, "totalCount": 8 },
+  "recentEntries": [ …latest 5… ]
+}
+```
+
+## GET /api/order
+Every running-low product × its `reorderQuantity` × its `price`, emptiest first.
+```json
+{
+  "items": [ { "id": 9, "name": "Cooking Oil 750ml", "inStock": 2,
+               "orderQuantity": 6, "unitPrice": 38.5, "lineTotal": 231 } ],
+  "total": 1187, "availableForStock": 2940, "withinBudget": true
+}
+```
+The order is only a suggestion; nothing is saved. The app shares it on WhatsApp
+and the owner logs a `STOCK` entry when they pay.

@@ -1,4 +1,49 @@
-# Credit Book
+# ThathaCash — Your shop, your control
+
+A cash-flow and stock app for South African spaza shop owners, built as a
+**validation MVP** on top of the original Credit Book app.
+
+It answers four questions for the owner:
+
+1. How much cash do I have? *(Cash available — the one number on Home)*
+2. How much of it can I safely take or spend? *(Safe to draw — 70% of cash; the other 30% is kept as a buffer)*
+3. What is running low? *(Stock)*
+4. What money came in and went out, and how much did I take for myself? *(Transactions, Draws)*
+
+**Home shows one number and one action.** Cash available, the "Safe to draw"
+expander, one line if stock is running low, and a Log money button. Everything
+else is reachable from the menu, not stacked on Home. On a first visit the
+owner sees only "Count your cash", then the result — nothing else.
+
+## ThathaCash at a glance
+
+| Screen | Page | Script | API |
+|---|---|---|---|
+| Home | `dashboard.html` | `js/home.js` | `GET /api/home` |
+| Stock | `stock.html` | `js/stock.js` | `GET/POST /api/items`, `PATCH /api/items/:id` |
+| ~~Create order~~ (parked) | `order.html` | `js/order.js` | `GET /api/order` |
+| Transactions | `transactions.html` | `js/money.js` | `GET/POST /api/cash`, `DELETE /api/cash/:id` |
+| Draws | `draws.html` | `js/draws.js` | `GET /api/cash?type=DRAW` |
+| More | `settings.html` | `js/settings.js` | `/api/auth/me` |
+
+- **Parked:** the recommended order + WhatsApp sharing screen is built and
+  works, but is deliberately out of the MVP. Nothing links to it; it opens at
+  `/order.html` and its `GET /api/order` endpoint is untouched. Delete it or
+  link it from Stock whenever you want it back.
+- The "log money" form is shared by every screen: `frontend/js/cash-entry.js`.
+- ThathaCash styles: `frontend/css/thathacash.css` (colour tokens stay in `base.css`).
+- **Every business rule** (the 70/30 split, "running low", order totals) is in
+  one file: `backend/app/services/shop_rules.py`.
+- Database: migration `0002` adds `quantity`, `low_stock_level` and
+  `reorder_quantity` to `items`, and a new `cash_entries` table. It only adds;
+  no Credit Book table or row is changed.
+
+The Credit Book features below (customers, credit, reminders, reports) still
+work, and their pages still open by URL. They are simply no longer in the menu.
+
+---
+
+# Credit Book (the foundation)
 
 A digital credit book for a small business owner. It replaces the paper notebook
 used to track who bought on credit, how much they owe, and when they promised to
