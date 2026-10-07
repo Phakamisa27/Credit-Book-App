@@ -92,6 +92,7 @@ An unmatched path under `/api` returns **404** `That endpoint does not exist.`
       "id": 1, "fullName": "Thandi Nkosi", "email": "thandi@example.com",
       "businessName": "Corner Spaza", "businessPhone": "074 099 8882",
       "profileImage": "",
+      "restockReserve": null, "bufferPercent": 10, "cashCountedAt": null,
       "createdAt": "2026-08-19T02:03:57.399Z", "updatedAt": "2026-08-19T02:03:57.399Z"
     },
     "token": "eyJhbGciOiJIUzI1NiIs…"
@@ -136,7 +137,9 @@ An unmatched path under `/api` returns **404** `That endpoint does not exist.`
   "fullName": "Thandi Nkosi",              // optional, ≤ 120 chars
   "businessName": "Corner Spaza",          // optional, ≤ 120; "" clears it
   "businessPhone": "074 099 8882",         // optional; "" clears it
-  "profileImage": "data:image/png;base64,…"// optional data: URI, ≤ 4 MB
+  "profileImage": "data:image/png;base64,…",// optional data: URI, ≤ 4 MB
+  "restockReserve": 300,                   // optional Safe to draw setting, rands, ≥ 0
+  "bufferPercent": 10                      // optional Safe to draw setting, 0–100
 }
 ```
 
@@ -541,7 +544,12 @@ keys sent change. **200** the updated item.
 | `INCOME` | Money in | in |
 | `EXPENSE` | Expense | out |
 | `STOCK` | Stock purchase | out |
-| `DRAW` | Draw | out |
+| `DRAW` | Personal draw | out |
+| `RECOUNT_IN` | Cash recount | in — written only by `POST /api/cash/count` |
+| `RECOUNT_OUT` | Cash recount | out — written only by `POST /api/cash/count` |
+
+Recounts are listed by `GET /api/cash` but are not in any of its `totals`, so
+sales and expense figures are not muddied by them.
 
 ```json
 { "id": 3, "type": "DRAW", "amount": 200, "note": "Personal",
@@ -572,12 +580,43 @@ period, even when `type` narrows the list.
 
 ### GET /api/cash/summary
 ```json
-{ "cashAvailable": 4200, "keptForExpenses": 1260, "availableForStock": 2940,
-  "reservePercent": 30, "drawsThisMonth": 330, "hasEntries": true }
+{ "cashAvailable": 250,
+  "safeToDraw": { "amount": 125, "restockReserve": 100, "restockSource": "OWNER",
+                  "restockReserveSet": true, "stockDays": 1, "minStockDays": 3,
+                  "buffer": 25, "bufferPercent": 10 },
+  "keptForExpenses": 75, "availableForStock": 175, "reservePercent": 30,
+  "drawsThisMonth": 330, "drawsThisMonthCount": 3,
+  "cashCountedAt": "2026-09-29T06:15:00.000Z", "hasEntries": true }
 ```
-Cash available = opening + income − expenses − stock − draws (all time).
-Available for stock = 70%, rounded **down** to whole rands. Both parts are 0 when
-cash is 0 or negative.
+Cash available = opening + income − expenses − stock − draws ± recounts (all time).
+
+Safe to draw = max(0, cash − restock reserve − buffer), from
+`shop_rules.calculate_safe_to_draw`:
+- restock reserve = stock spend in the last 7 days (today included) ÷ 7, rounded
+  **up** to whole rands (`restockSource: "AVERAGE"`) — or, with stock bought on
+  fewer than 3 of those days, the owner's `restockReserve` setting (`"OWNER"`,
+  R0 until set; `restockReserveSet` says whether it has been).
+- buffer = `bufferPercent` of cash, rounded **up** to whole rands; 0 when cash is
+  0 or negative.
+
+`availableForStock` / `keptForExpenses` are the Order screen's stock budget: 70%
+of cash, rounded **down** to whole rands, and the other 30%.
+
+`cashCountedAt` is when the owner last confirmed their cash (starting cash or a
+recount), `null` if never.
+
+### POST /api/cash/count
+```json
+{ "amount": 1840 }
+```
+The cash the owner just counted in the till (R0 allowed). The difference from
+cash available is saved as a `RECOUNT_IN` / `RECOUNT_OUT` entry dated today, and
+`cashCountedAt` is set to now. **200**
+`{ "difference": -50, "cash": { …same as /cash/summary… } }`
+
+| Status | Message |
+|---|---|
+| 400 | `Cash counted cannot be negative.` / `Cash counted is required.` / `Cash counted cannot have more than two decimal places.` |
 
 ### DELETE /api/cash/{id}
 **200** `{ "message": "Entry deleted." }` · **404** `Entry not found.`

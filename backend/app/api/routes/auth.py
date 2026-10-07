@@ -117,6 +117,12 @@ def update_me(
         )
     if "profileImage" in body:
         patch["profileImage"] = v.optional_image(body["profileImage"], "Profile photo")
+    if "restockReserve" in body:
+        patch["restockReserve"] = v.require_rands_or_zero(
+            body["restockReserve"], "Restock reserve"
+        )
+    if "bufferPercent" in body:
+        patch["bufferPercent"] = v.require_percent(body["bufferPercent"], "Buffer")
 
     return ok(auth_service.update_profile(db, user_id, patch))
 

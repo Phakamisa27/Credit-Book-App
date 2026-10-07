@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 PUBLIC_COLUMNS = """
   id, full_name, email, business_name, business_phone, profile_image,
+  restock_reserve, buffer_percent, cash_counted_at,
   created_at, updated_at
 """
 
@@ -18,6 +19,8 @@ UPDATABLE_COLUMNS = {
     "businessName": "business_name",
     "businessPhone": "business_phone",
     "profileImage": "profile_image",
+    "restockReserve": "restock_reserve",
+    "bufferPercent": "buffer_percent",
 }
 
 

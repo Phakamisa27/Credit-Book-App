@@ -6,7 +6,7 @@ A cash-flow and stock app for South African spaza shop owners, built as a
 It answers four questions for the owner:
 
 1. How much cash do I have? *(Cash available — the one number on Home)*
-2. How much of it can I safely take or spend? *(Safe to draw — 70% of cash; the other 30% is kept as a buffer)*
+2. How much of it can I safely take? *(Safe to draw — cash, minus what is kept for restocking, minus an emergency buffer; see `backend/app/services/shop_rules.py`)*
 3. What is running low? *(Stock)*
 4. What money came in and went out, and how much did I take for myself? *(Transactions, Draws)*
 

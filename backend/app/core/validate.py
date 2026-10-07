@@ -11,8 +11,10 @@ from __future__ import annotations
 
 import re
 from datetime import date
+from decimal import Decimal, InvalidOperation
 
 from app.core.errors import ApiError
+from app.core.money import parse_amount, to_decimal
 
 _EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -124,6 +126,39 @@ def require_whole_number(
     if value > maximum:
         raise ApiError.bad_request(f"{field} is too large.")
     return value
+
+
+def require_rands_or_zero(value: object, field: str) -> Decimal:
+    """A money setting where R0 is a real answer ("keep nothing aside")."""
+    if not isinstance(value, bool) and isinstance(value, (int, float, str)):
+        try:
+            number = to_decimal(value)
+            if number == 0:
+                return Decimal("0.00")
+            if number < 0:
+                raise ApiError.bad_request(f"{field} cannot be negative.")
+        except (InvalidOperation, ValueError, ArithmeticError):
+            pass
+    amount = parse_amount(value, field)
+    if not amount.ok:
+        raise ApiError.bad_request(amount.message)
+    return amount.value
+
+
+def require_percent(value: object, field: str) -> Decimal:
+    """0 to 100, at most two decimals: 10, 12.5."""
+    message = f"{field} must be a percentage from 0 to 100."
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        raise ApiError.bad_request(message)
+    try:
+        number = to_decimal(value)
+    except (InvalidOperation, ValueError, ArithmeticError):
+        raise ApiError.bad_request(message) from None
+    if not number.is_finite() or number < 0 or number > 100:
+        raise ApiError.bad_request(message)
+    if number != number.quantize(Decimal("0.01")):
+        raise ApiError.bad_request(f"{field} cannot have more than two decimal places.")
+    return number.quantize(Decimal("0.01"))
 
 
 def optional_gender(value: object) -> str | None:

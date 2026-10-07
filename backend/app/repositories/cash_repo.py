@@ -12,7 +12,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.models.cash_entry import CASH_TYPES
+from app.models.cash_entry import ALL_CASH_TYPES
 
 COLUMNS = "id, type, amount, note, entry_date, created_at"
 
@@ -45,7 +45,7 @@ def list_rows(
     params: dict[str, Any] = {"user_id": user_id, "limit": min(max(limit, 1), MAX_LIMIT)}
     where = " WHERE user_id = :user_id "
 
-    if type_ in CASH_TYPES:
+    if type_ in ALL_CASH_TYPES:
         params["type"] = type_
         where += " AND type = :type "
     where += _period_filter(date_from, date_to, params)
@@ -79,16 +79,39 @@ def cash_position(db: Session, user_id: int) -> Any:
     """All-time cash, plus the figures the Home screen needs alongside it."""
     sql = """
         SELECT
-          COALESCE(SUM(CASE WHEN type IN ('OPENING', 'INCOME') THEN amount ELSE -amount END), 0)
-            AS cash_available,
+          (SELECT restock_reserve FROM users WHERE id = :user_id) AS restock_reserve,
+          (SELECT buffer_percent FROM users WHERE id = :user_id) AS buffer_percent,
+          (SELECT cash_counted_at FROM users WHERE id = :user_id) AS cash_counted_at,
+          COALESCE(SUM(
+            CASE WHEN type IN ('OPENING', 'INCOME', 'RECOUNT_IN') THEN amount ELSE -amount END
+          ), 0) AS cash_available,
           COALESCE(SUM(amount) FILTER (
             WHERE type = 'DRAW' AND entry_date >= date_trunc('month', CURRENT_DATE)
           ), 0) AS draws_this_month,
+          COUNT(*) FILTER (
+            WHERE type = 'DRAW' AND entry_date >= date_trunc('month', CURRENT_DATE)
+          ) AS draws_this_month_count,
           COUNT(*) AS entry_count
         FROM cash_entries
         WHERE user_id = :user_id
     """
     return db.execute(text(sql), {"user_id": user_id}).mappings().first()
+
+
+def stock_spend(db: Session, user_id: int, days: int) -> Any:
+    """Stock bought in the last `days` days (today included): the total, and
+    on how many different days it was bought."""
+    sql = """
+        SELECT
+          COALESCE(SUM(amount), 0) AS total,
+          COUNT(DISTINCT entry_date) AS days
+        FROM cash_entries
+        WHERE user_id = :user_id
+          AND type = 'STOCK'
+          AND entry_date >  CURRENT_DATE - CAST(:days AS integer)
+          AND entry_date <= CURRENT_DATE
+    """
+    return db.execute(text(sql), {"user_id": user_id, "days": days}).mappings().first()
 
 
 def find_row(db: Session, user_id: int, entry_id: int) -> Any | None:
@@ -102,8 +125,31 @@ def find_row(db: Session, user_id: int, entry_id: int) -> Any | None:
     )
 
 
+def _mark_counted(db: Session, user_id: int) -> None:
+    """The owner has just confirmed the cash. Committed by the caller."""
+    db.execute(text("UPDATE users SET cash_counted_at = now() WHERE id = :id"), {"id": user_id})
+
+
 def insert(db: Session, user_id: int, data: dict[str, Any]) -> Any:
-    row = (
+    row = _insert_row(db, user_id, data)
+    # Entering starting cash IS counting it.
+    if data["type"] == "OPENING":
+        _mark_counted(db, user_id)
+    db.commit()
+    return row
+
+
+def record_count(db: Session, user_id: int, difference: dict[str, Any] | None) -> None:
+    """Saves a till count: the difference as a recount entry (if there is
+    one), and the time — together, so neither can be saved without the other."""
+    if difference is not None:
+        _insert_row(db, user_id, difference)
+    _mark_counted(db, user_id)
+    db.commit()
+
+
+def _insert_row(db: Session, user_id: int, data: dict[str, Any]) -> Any:
+    return (
         db.execute(
             text(
                 f"""
@@ -123,8 +169,6 @@ def insert(db: Session, user_id: int, data: dict[str, Any]) -> Any:
         .mappings()
         .first()
     )
-    db.commit()
-    return row
 
 
 def delete(db: Session, user_id: int, entry_id: int) -> bool:

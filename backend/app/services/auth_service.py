@@ -12,6 +12,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app.core.errors import ApiError
+from app.core.money import to_amount
 from app.core.security import dummy_verify, hash_password, verify_password
 from app.core.serialize import iso_utc
 from app.repositories import user_repo
@@ -28,6 +29,13 @@ def to_api(row: Any) -> dict[str, Any] | None:
         "businessName": row["business_name"] or "",
         "businessPhone": row["business_phone"] or "",
         "profileImage": row["profile_image"] or "",
+        # Safe to draw settings. restockReserve stays null until the owner
+        # sets it, so Home can ask them to.
+        "restockReserve": (
+            None if row["restock_reserve"] is None else to_amount(row["restock_reserve"])
+        ),
+        "bufferPercent": to_amount(row["buffer_percent"]),
+        "cashCountedAt": iso_utc(row["cash_counted_at"]),
         "createdAt": iso_utc(row["created_at"]),
         "updatedAt": iso_utc(row["updated_at"]),
     }

@@ -15,3 +15,9 @@ class CashEntryCreateRequest(RequestModel):
     amount: Any = None
     note: Any = None
     date: Any = None
+
+
+class CashCountRequest(RequestModel):
+    """{"amount": 1840} — the cash the owner counted in the till just now."""
+
+    amount: Any = None

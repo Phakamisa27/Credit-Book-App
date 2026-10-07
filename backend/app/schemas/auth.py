@@ -24,6 +24,9 @@ class UpdateMeRequest(RequestModel):
     businessName: Any = None
     businessPhone: Any = None
     profileImage: Any = None
+    # Safe to draw settings.
+    restockReserve: Any = None
+    bufferPercent: Any = None
 
 
 class ChangePasswordRequest(RequestModel):

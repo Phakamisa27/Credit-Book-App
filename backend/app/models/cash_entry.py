@@ -17,8 +17,15 @@ EXPENSE = "EXPENSE"  # electricity, rent, transport…
 STOCK = "STOCK"  # buying stock from the wholesaler
 DRAW = "DRAW"  # money the owner takes for themselves
 
+# Written only by a cash recount, never logged directly: the difference
+# between what the books say and what the owner counted in the till.
+RECOUNT_IN = "RECOUNT_IN"  # the till had more than the books
+RECOUNT_OUT = "RECOUNT_OUT"  # the till had less than the books
+
+# What the owner can log through POST /api/cash.
 CASH_TYPES = [OPENING, INCOME, EXPENSE, STOCK, DRAW]
-MONEY_IN = [OPENING, INCOME]
+ALL_CASH_TYPES = [*CASH_TYPES, RECOUNT_IN, RECOUNT_OUT]
+MONEY_IN = [OPENING, INCOME, RECOUNT_IN]
 
 
 class CashEntry(Base):
@@ -32,7 +39,7 @@ class CashEntry(Base):
     __tablename__ = "cash_entries"
     __table_args__ = (
         CheckConstraint(
-            "type IN ('OPENING', 'INCOME', 'EXPENSE', 'STOCK', 'DRAW')",
+            "type IN ('OPENING', 'INCOME', 'EXPENSE', 'STOCK', 'DRAW', 'RECOUNT_IN', 'RECOUNT_OUT')",
             name="cash_entries_type_check",
         ),
         CheckConstraint("amount > 0", name="cash_entries_amount_check"),

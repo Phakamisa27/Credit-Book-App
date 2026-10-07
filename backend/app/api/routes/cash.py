@@ -1,5 +1,5 @@
 """Cash entry routes (ThathaCash): log money in, expenses, stock purchases and
-draws, and list them for a period."""
+draws, list them for a period, and record a till recount."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from app.core.errors import ApiError
 from app.core.money import parse_amount
 from app.db.session import get_db
 from app.dependencies.auth import CurrentUserId
-from app.models.cash_entry import CASH_TYPES
-from app.schemas.cash import CashEntryCreateRequest
+from app.models.cash_entry import ALL_CASH_TYPES, CASH_TYPES
+from app.schemas.cash import CashCountRequest, CashEntryCreateRequest
 from app.schemas.common import ERROR_RESPONSES, ok
 from app.services import cash_service
 
@@ -28,7 +28,7 @@ def list_entries(
     date_to: str = Query("", alias="to"),
 ) -> dict:
     """GET /api/cash?type=DRAW&from=2026-09-01&to=2026-09-30"""
-    type_ = v.require_enum(type, CASH_TYPES, "Type") if type else ""
+    type_ = v.require_enum(type, ALL_CASH_TYPES, "Type") if type else ""
     return ok(
         cash_service.list_entries(
             db,
@@ -70,6 +70,20 @@ def create_entry(
             },
         )
     )
+
+
+@router.post("/count")
+def count_cash(
+    payload: CashCountRequest,
+    user_id: CurrentUserId,
+    db: Session = Depends(get_db),
+) -> dict:
+    """POST /api/cash/count {"amount": 1840} — the cash the owner just counted.
+
+    R0 is allowed: an empty till is a real count.
+    """
+    counted = v.require_rands_or_zero(payload.amount, "Cash counted")
+    return ok(cash_service.record_count(db, user_id, counted))
 
 
 @router.delete("/{entry_id}")
