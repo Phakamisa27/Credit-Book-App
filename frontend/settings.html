@@ -32,6 +32,17 @@
             </button>
           </div>
 
+          <div class="tc-card mt-16" id="safe-to-draw">
+            <button class="tc-row" type="button" data-open="drawRulesModal">
+              <span class="tc-row-icon" aria-hidden="true">🛡️</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">Safe to draw</span>
+                <span class="tc-row-sub" id="drawRulesSub">Restock reserve and buffer</span>
+              </span>
+              <span class="tc-chevron" data-chevron></span>
+            </button>
+          </div>
+
           <div class="tc-card mt-16">
             <button class="tc-row" type="button" data-open="businessModal">
               <span class="tc-row-icon" aria-hidden="true">🏪</span>
@@ -173,6 +184,38 @@
       </div>
     </div>
 
+    <!-- ------------------------------------------------- safe to draw -->
+    <div class="modal" id="drawRulesModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="drawRulesTitle">
+        <div class="modal-head">
+          <h3 id="drawRulesTitle">Safe to draw</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="drawRulesForm" autocomplete="off" novalidate>
+            <p id="drawRulesError" class="form-error" hidden></p>
+            <div class="form-group">
+              <label for="restockReserve">Restock reserve (R)</label>
+              <input class="form-control" id="restockReserve" name="restockReserve" type="number"
+                inputmode="decimal" min="0" step="0.01" placeholder="e.g. 300" />
+              <p class="form-hint">
+                Money kept for buying stock. Once you log stock purchases on 3 different days
+                in a week, ThathaCash uses your average daily stock spend instead.
+              </p>
+            </div>
+            <div class="form-group">
+              <label for="bufferPercent">Emergency buffer (%)</label>
+              <input class="form-control" id="bufferPercent" name="bufferPercent" type="number"
+                inputmode="decimal" min="0" max="100" step="0.01" placeholder="10" />
+              <p class="form-hint">The share of your cash always kept aside. 10% is a good start.</p>
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- --------------------------------------------------------- help -->
     <div class="modal" id="helpModal" hidden>
       <div class="modal-backdrop" data-close></div>
@@ -184,19 +227,27 @@
         <div class="modal-body faq">
           <h4>What is "Cash available"?</h4>
           <p>Your starting cash, plus all the money in you logged, minus expenses, stock
-            purchases and draws. Log every day, and it matches the cash in your shop.</p>
+            purchases and draws. Log every day, and it matches the cash in your shop. If it
+            doesn't, tap "Recount" on Home and enter what is really in the till.</p>
 
           <h4>What is "Safe to draw"?</h4>
-          <p>70% of your cash. The other 30% is kept as a buffer for emergencies, so drawing
-            money — or spending on stock — never leaves you with nothing.</p>
+          <p>Your cash, minus what is kept for restocking, minus an emergency buffer (10% of
+            your cash unless you change it). What is left can go home with you without
+            leaving the shop unable to buy stock.</p>
+
+          <h4>How is "Kept for restocking" worked out?</h4>
+          <p>From what you spent on stock in the last 7 days, as a daily average. Until you
+            have logged stock purchases on at least 3 days, the amount you set under
+            More → Safe to draw is used instead.</p>
 
           <h4>When is a product "Running low"?</h4>
           <p>When the number in your shop is at or below the "Running low at" number you set
             for that product.</p>
 
-          <h4>What is a draw?</h4>
+          <h4>What is a personal draw?</h4>
           <p>Money you take out of the shop for yourself or your family. It is not a shop
-            expense, so ThathaCash keeps it separate.</p>
+            expense, so ThathaCash keeps it separate. If a draw is more than Safe to draw,
+            ThathaCash tells you — but the choice is always yours.</p>
 
           <h4>I made a mistake</h4>
           <p>Go to Transactions, tap the entry, and delete it. Then log it again.</p>

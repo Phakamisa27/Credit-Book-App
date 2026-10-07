@@ -412,7 +412,7 @@ select.form-control {
   z-index: 50;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .bottom-nav {
     left: 50%;
     right: auto;
@@ -629,3 +629,31 @@ select.form-control {
 
 .text-center { text-align: center; }
 .mt-16 { margin-top: 16px; }
+
+/* Phones: every tap target at least 44px, so a thumb finds it first time.
+   min-height wins over a smaller `height` set elsewhere. */
+@media (max-width: 767px) {
+  .btn,
+  .btn.btn-sm,
+  .filter-chip,
+  .tc-add-btn,
+  .tc-icon-btn,
+  .modal-close,
+  .link-btn,
+  .note-chips button,
+  .stepper button,
+  .nav-item {
+    min-height: 44px;
+  }
+
+  .tc-icon-btn,
+  .modal-close,
+  .stepper button {
+    min-width: 44px;
+  }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+  }
+}

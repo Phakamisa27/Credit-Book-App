@@ -50,20 +50,56 @@
               </span>
             </a>
 
-            <!-- The 30% rule is detail, not a second headline. -->
+            <p class="counted-line">
+              <span id="countedText">Cash not counted yet</span>
+              <button class="link-btn" type="button" id="recountBtn">Recount</button>
+            </p>
+
+            <!-- The working is detail, not a second headline. -->
             <details class="cash-details">
               <summary>
                 <span>Safe to draw</span>
-                <strong id="safeToUse">R0</strong>
+                <strong id="safeToDraw">R0</strong>
               </summary>
               <div class="cash-details-body">
-                <div class="row-between">
-                  <span>Set aside</span>
-                  <strong id="keptForExpenses">R0</strong>
-                </div>
-                <p id="reserveHint"></p>
+                <dl class="draw-breakdown">
+                  <div>
+                    <dt>Cash available</dt>
+                    <dd id="bdCash">R0</dd>
+                  </div>
+                  <div>
+                    <dt>− Kept for restocking <small id="bdRestockNote"></small></dt>
+                    <dd id="bdRestock">R0</dd>
+                  </div>
+                  <div>
+                    <dt>− Emergency buffer <small id="bdBufferNote"></small></dt>
+                    <dd id="bdBuffer">R0</dd>
+                  </div>
+                  <div class="draw-breakdown-total">
+                    <dt>= Safe to draw</dt>
+                    <dd id="bdSafe">R0</dd>
+                  </div>
+                </dl>
+                <p>This is what is left after your shop protects itself.</p>
+                <a class="link-btn" href="settings.html#safe-to-draw">Change these amounts</a>
               </div>
             </details>
+
+            <!-- Only while there is too little stock history and no amount set. -->
+            <a class="reserve-prompt" id="reservePrompt" href="settings.html#safe-to-draw" hidden>
+              <span aria-hidden="true">🛒</span>
+              <span>How much should we keep for restocking? <strong>Set it</strong></span>
+            </a>
+
+            <!-- Low-key on purpose: a record, not a telling-off. -->
+            <a class="drawn-card" href="draws.html">
+              <span class="tc-row-icon" aria-hidden="true">👛</span>
+              <span class="tc-row-main">
+                <span class="tc-row-title">Drawn this month</span>
+                <span class="tc-row-sub" id="drawnSub">Nothing drawn yet this month</span>
+              </span>
+              <strong id="drawnTotal" hidden>R0</strong>
+            </a>
 
             <a class="low-stock-line" id="lowStockLine" href="stock.html" hidden>
               <span aria-hidden="true">📦</span>
@@ -76,6 +112,29 @@
             </button>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ recount -->
+    <div class="modal" id="recountModal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="recountTitle">
+        <div class="modal-head">
+          <h3 id="recountTitle">Count your cash</h3>
+          <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="recountForm" novalidate>
+            <p class="form-error" id="recountError" hidden></p>
+            <div class="form-group">
+              <label for="countedCash">Cash in your till and cash box (R)</label>
+              <input class="form-control amount-input" id="countedCash" type="number"
+                inputmode="decimal" min="0" step="0.01" placeholder="0" required />
+              <p class="form-hint" id="recountHint"></p>
+            </div>
+            <button class="btn btn-primary" type="submit">Save count</button>
+          </form>
+        </div>
       </div>
     </div>
 

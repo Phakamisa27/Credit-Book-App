@@ -1,5 +1,5 @@
-// settings.js — the "More" screen: profile, business info, password, help.
-// Everything saves through the existing /api/auth/me endpoints.
+// settings.js — the "More" screen: profile, business info, Safe to draw
+// settings, password, help. Everything saves through /api/auth/me.
 
 (() => {
   const modals = {};
@@ -28,6 +28,63 @@
     document.getElementById('businessName').value = user.businessName || '';
     document.getElementById('businessPhone').value = user.businessPhone || '';
     renderPhoto(user.profileImage);
+    renderDrawRules(user);
+  }
+
+  // ------------------------------------------------------- safe to draw --
+  function renderDrawRules(user) {
+    // Older cached users have no settings yet; the server fills them in.
+    if (user.bufferPercent === undefined) return;
+    const reserve = user.restockReserve;
+    App.setText(
+      'drawRulesSub',
+      `Restock ${reserve === null ? 'not set' : App.formatRands(reserve)} · ` +
+        `Buffer ${user.bufferPercent}%`
+    );
+    document.getElementById('restockReserve').value = reserve === null ? '' : reserve;
+    document.getElementById('bufferPercent').value = user.bufferPercent;
+  }
+
+  function initDrawRulesForm() {
+    const form = document.getElementById('drawRulesForm');
+    const money = /^\d+(\.\d{1,2})?$/;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showError('drawRulesError', '');
+
+      const reserve = form.elements.restockReserve.value.trim();
+      const buffer = form.elements.bufferPercent.value.trim();
+
+      if (!money.test(reserve)) {
+        return showError('drawRulesError', 'Enter a restock reserve in rand, e.g. 300 (or 0).');
+      }
+      if (!money.test(buffer) || Number(buffer) > 100) {
+        return showError('drawRulesError', 'Enter a buffer from 0 to 100, e.g. 10.');
+      }
+
+      await App.withBusy(form.querySelector('button[type="submit"]'), async () => {
+        try {
+          const user = await API.auth.updateMe({
+            restockReserve: Number(reserve),
+            bufferPercent: Number(buffer),
+          });
+          API.setSession(API.getToken(), user);
+          renderUser(user);
+          modals.drawRulesModal.close();
+
+          // Show the effect straight away. Home recalculates on its next load.
+          try {
+            const cash = await API.cash.summary();
+            App.toastSuccess(`Saved. Safe to draw is now ${App.formatRands(cash.safeToDraw.amount)}`);
+          } catch (_) {
+            App.toastSuccess('Saved');
+          }
+        } catch (err) {
+          showError('drawRulesError', err.message);
+        }
+      });
+    });
   }
 
   function saved(user, message) {
@@ -170,7 +227,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     if (document.body.dataset.page !== 'settings') return;
 
-    ['profileModal', 'businessModal', 'helpModal', 'aboutModal'].forEach((id) => {
+    ['profileModal', 'businessModal', 'drawRulesModal', 'helpModal', 'aboutModal'].forEach((id) => {
       modals[id] = Modal.create(id);
     });
     document.querySelectorAll('[data-open]').forEach((row) => {
@@ -193,6 +250,7 @@
     initBusinessForm();
     initPhotoUpload();
     initPasswordForm();
+    initDrawRulesForm();
 
     const cached = API.getCachedUser();
     if (cached) renderUser(cached);
@@ -201,5 +259,8 @@
     } catch (err) {
       App.handleError(err);
     }
+
+    // Home's "Set it" / "Change these amounts" links land here.
+    if (window.location.hash === '#safe-to-draw') modals.drawRulesModal.open();
   });
 })();

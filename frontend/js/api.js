@@ -238,11 +238,14 @@ const API = (() => {
   // ============================================================ ThathaCash ==
   // ----------------------------------------------------------------- cash --
   // type: OPENING (starting cash) | INCOME | EXPENSE | STOCK | DRAW
+  // (RECOUNT_IN / RECOUNT_OUT are written only by count())
   const cash = {
     list: (params) => get(`/cash${qs(params)}`), // { entries, totals }
     summary: () => get('/cash/summary'),
     create: (data) => post('/cash', data),
     remove: (id) => del(`/cash/${id}`),
+    // The cash the owner counted in the till -> { difference, cash }
+    count: (amount) => post('/cash/count', { amount }),
   };
 
   // Everything the Home screen shows, in one request.

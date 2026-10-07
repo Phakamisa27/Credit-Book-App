@@ -9,10 +9,10 @@
 
   const TITLES = {
     '': 'All transactions',
-    INCOME: 'Income',
-    EXPENSE: 'Expenses',
+    INCOME: 'Sales',
+    EXPENSE: 'Shop expenses',
     STOCK: 'Stock purchases',
-    DRAW: 'Draws',
+    DRAW: 'Personal draws',
   };
 
   function iso(d) {
@@ -86,9 +86,10 @@
 
     document.getElementById('period').addEventListener('change', load);
 
-    // "+ Log money" starts on whichever kind of entry is being viewed.
+    // "+ Log money" starts on whichever kind of entry is being viewed, or asks
+    // what kind it is when showing all of them.
     document.getElementById('addEntryBtn').addEventListener('click', () => {
-      CashEntry.open({ type: type || 'INCOME', onSaved: load });
+      CashEntry.open({ type: type || null, onSaved: load });
     });
 
     document.getElementById('entryList').addEventListener('click', (e) => {

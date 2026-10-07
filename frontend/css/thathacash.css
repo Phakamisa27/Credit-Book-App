@@ -210,8 +210,19 @@
   color: #ffd6d6;
 }
 
-/* Home's one secondary number. The 30% rule is detail behind an expander,
-   not a second headline. */
+/* "Cash last counted today, 08:15 · Recount" under the headline number. */
+.counted-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 8px 2px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Home's one secondary number. Its working sits behind an expander, not in
+   a second headline. */
 .cash-details {
   background: var(--card);
   border-radius: var(--radius-sm);
@@ -263,14 +274,98 @@
   border-top: 1px solid var(--border);
 }
 
-.cash-details-body .row-between {
-  padding: 12px 0 4px;
-}
-
 .cash-details-body p {
-  margin: 0;
+  margin: 0 0 6px;
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+/* Cash available − restocking − buffer = safe to draw, one line each. */
+.draw-breakdown {
+  margin: 0 0 10px;
+  padding-top: 6px;
+}
+
+.draw-breakdown div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+}
+
+.draw-breakdown dt {
+  font-size: 0.92rem;
+}
+
+.draw-breakdown dt small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.draw-breakdown dd {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.draw-breakdown .draw-breakdown-total {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 10px;
+}
+
+.draw-breakdown .draw-breakdown-total dt,
+.draw-breakdown .draw-breakdown-total dd {
+  font-weight: 800;
+  color: var(--green-dark);
+}
+
+/* Asks for a restock amount while there is no stock history to use. */
+.reserve-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  background: var(--card);
+  border: 1.5px dashed #bfe0cc;
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.reserve-prompt strong {
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.reserve-prompt[hidden] {
+  display: none;
+}
+
+/* "Drawn this month": neutral colours on purpose. */
+.drawn-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.drawn-card strong {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* Stock gets ONE line on Home. The Stock tab has the rest. */
@@ -563,37 +658,47 @@
 }
 
 /* ------------------------------------------------------ log money form ---- */
-.type-picker {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 16px;
+/* Step 1: what kind of money? Four big rows, one tap each. */
+.choice-list .tc-row {
+  min-height: 64px;
 }
 
-.type-picker button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 2px;
-  border: 1.5px solid var(--border);
+.choice-list .tc-row-sub {
+  white-space: normal;
+}
+
+.choice-list[hidden],
+#cashEntryForm[hidden] {
+  display: none;
+}
+
+.change-type {
+  margin-bottom: 12px;
+}
+
+/* A draw bigger than Safe to draw: amber, not red — a heads-up, not a no. */
+.draw-warning {
+  background: var(--amber-soft);
   border-radius: var(--radius-sm);
-  background: var(--card);
-  font-family: inherit;
-  font-size: 0.72rem;
+  padding: 14px;
+  margin-bottom: 4px;
+}
+
+.draw-warning p {
+  margin: 0;
+  color: var(--amber);
   font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
 }
 
-.type-picker button span {
-  font-size: 1.2rem;
+.draw-warning .draw-warning-sub {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
 }
 
-.type-picker button[aria-pressed='true'] {
-  border-color: var(--green);
-  background: var(--green-soft);
-  color: var(--green-dark);
+.draw-warning .modal-actions {
+  margin-top: 12px;
 }
 
 .amount-input {
@@ -787,7 +892,7 @@
 }
 
 /* On phones the send button sits just above the bottom menu. */
-@media (max-width: 1023px) {
+@media (max-width: 767px) {
   .order-actions.sticky {
     position: sticky;
     bottom: calc(72px + env(safe-area-inset-bottom));
@@ -845,7 +950,7 @@
 }
 
 /* The sidebar already shows the logo on wide screens. */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .tc-brand {
     visibility: hidden;
   }

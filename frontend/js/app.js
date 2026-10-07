@@ -326,7 +326,7 @@ const App = (() => {
     </aside>`;
   }
 
-  // Below 1024px the sidebar is hidden and this bar is the menu.
+  // Below 768px the sidebar is hidden and this bar is the menu.
   function renderBottomNav() {
     const active = activeNavKey();
     const links = NAV_ITEMS.map(
